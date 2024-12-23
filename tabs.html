@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<style>
+@import "https://cdn.jsdelivr.net/npm/destyle.css@4.0.1/destyle.min.css";
+@import "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap";
+:root {
+  font-size: min(calc(100vw / 960 * 10), 10px);
+}
+body {
+  font: 1.6rem / 1.5 Inter, "Noto Sans JP", serif;
+  padding: 3.2rem;
+}
+[role="tablist"] {
+  --a: 0.4rem;
+  --r1: 0.8rem;
+  --r2: 0.8rem;
+  border-color: #000;
+  border-style: solid;
+  display: flex;
+  font-weight: bold;
+  gap: 1.6rem;
+  padding-inline: 3.2rem;
+  text-align: center;
+  &:has(+ [role="tabpanel"]) {
+    border-bottom-width: var(--a);
+    [role="tabpanel"] & {
+      margin-top: 3.2rem;
+    }
+  }
+  [role="tabpanel"] + & {
+    border-top-width: var(--a);
+  }
+}
+[role="tab"] {
+  background: rgb(0 0 0 / 0.2);
+  border-inline: var(--r2) solid #0000;
+  flex: 1;
+  margin-inline: calc(-1 * var(--r2));
+  padding-inline: 1.6rem;
+  transition-duration: 0.3s;
+  transition-property: background, color;
+  [role="tablist"]:has(+ [role="tabpanel"]) & {
+    border-top-left-radius: calc(var(--r1) + var(--r2)) var(--r1);
+    border-top-right-radius: calc(var(--r1) + var(--r2)) var(--r1);
+    mask: radial-gradient(var(--r2) at var(--r2) 0, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) 100% / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
+    padding-block: 1.6rem calc(1.6rem - var(--a));
+  }
+  [role="tabpanel"] + [role="tablist"] & {
+    border-bottom-left-radius: calc(var(--r1) + var(--r2)) var(--r1);
+    border-bottom-right-radius: calc(var(--r1) + var(--r2)) var(--r1);
+    mask: radial-gradient(var(--r2) at var(--r2) 100%, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) 0 / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
+    padding-block: calc(1.6rem - var(--a)) 1.6rem;
+  }
+  &[aria-selected="true"] {
+    background: #000;
+    color: #fff;
+  }
+}
+[role="tabpanel"] {
+  background: rgb(0 0 0 / 0.1);
+  &:not([hidden]) {
+    padding: 3.2rem;
+  }
+}
+
+/* indicator */
+[role="tablist"] {
+  position: relative;
+  &::before {
+    background: linear-gradient(100deg, #0000, #66c, #c69, #f96 50%, #0000);
+    content: "";
+    display: block;
+    height: var(--a);
+    left: calc(var(--indicator-left) + 1.6rem + var(--r2));
+    position: absolute;
+    transition-duration: 0.3s;
+    transition-property: left, width;
+    width: calc(var(--indicator-width) - 3.2rem - var(--r2) * 2);
+  }
+  &:has(+ [role="tabpanel"])::before {
+    bottom: calc(-1 * var(--a));
+  }
+  [role="tabpanel"] + &::before {
+    top: calc(-1 * var(--a));
+  }
+}
+</style>
+</head>
+<body>
+<div data-tabs>
+  <div role="tablist">
+    <button role="tab" aria-selected="true">Tab 1</button>
+    <button role="tab" aria-selected="false">Tab 2</button>
+    <button role="tab" aria-selected="false">Tab 3</button>
+  </div>
+  <div role="tabpanel">
+    検索 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tabpanel" hidden="until-found">
+    けんさく Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    <div data-tabs>
+      <div role="tablist">
+        <button role="tab" aria-selected="true">Nested tab 2-1</button>
+        <button role="tab" aria-selected="false">Nested tab 2-2</button>
+        <button role="tab" aria-selected="false">Nested tab 2-3</button>
+      </div>
+      <div role="tabpanel">
+        検索 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </div>
+      <div role="tabpanel" hidden="until-found">
+        けんさく Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+      </div>
+      <div role="tabpanel" hidden="until-found">
+        森田健作 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <div data-tabs>
+          <div role="tablist">
+            <button role="tab" aria-selected="false">More nested tab 2-3-1</button>
+            <button role="tab" aria-selected="true">More nested tab 2-3-2</button>
+            <button role="tab" aria-selected="false">More nested tab 2-3-3</button>
+          </div>
+          <div role="tabpanel" hidden="until-found">
+            検索 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </div>
+          <div role="tabpanel">
+            けんさく Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </div>
+          <div role="tabpanel" hidden="until-found">
+            森田健作 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </div>
+          <div role="tablist">
+            <button role="tab" aria-selected="false">More nested tab 2-3-1</button>
+            <button role="tab" aria-selected="true">More nested tab 2-3-2</button>
+            <button role="tab" aria-selected="false">More nested tab 2-3-3</button>
+          </div>
+        </div>
+    
+      </div>
+      <div role="tablist">
+        <button role="tab" aria-selected="true">Nested tab 2-1</button>
+        <button role="tab" aria-selected="false">Nested tab 2-2</button>
+        <button role="tab" aria-selected="false">Nested tab 2-3</button>
+      </div>
+    </div>
+  </div>
+  <div role="tabpanel" hidden="until-found">
+    森田健作 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tablist">
+    <button role="tab" aria-selected="true">Tab 1</button>
+    <button role="tab" aria-selected="false">Tab 2</button>
+    <button role="tab" aria-selected="false">Tab 3</button>
+  </div>
+</div>
+<br><br><br><br><br>
+<div data-tabs>
+  <div role="tablist" aria-orientation="vertical">
+    <button role="tab" aria-selected="false">Tab 1 (vertical)</button>
+    <button role="tab" aria-selected="true">Tab 2 (vertical)</button>
+    <button role="tab" aria-selected="false">Tab 3 (vertical)</button>
+  </div>
+  <div role="tabpanel" hidden="until-found">
+    検索 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tabpanel">
+    けんさく Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tabpanel" hidden="until-found">
+    森田健作 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tablist" aria-orientation="vertical">
+    <button role="tab" aria-selected="false">Tab 1 (vertical)</button>
+    <button role="tab" aria-selected="true">Tab 2 (vertical)</button>
+    <button role="tab" aria-selected="false">Tab 3 (vertical)</button>
+  </div>
+</div>
+<script src="tabs.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[role="tablist"]').forEach(a => {
+    const b = () => {
+      const b = a.style;
+      const c = a.querySelector('[aria-selected="true"]').getBoundingClientRect();
+      b.setProperty('--indicator-left', `${c.left - a.getBoundingClientRect().left}px`);
+      b.setProperty('--indicator-width', `${c.width}px`);
+    }
+    new ResizeObserver(() => {
+      b();
+    }).observe(document.documentElement);
+    new MutationObserver(a => {
+      b();
+    }).observe(a, {
+      attributes: true,
+      attributeFilter: ['aria-selected'],
+      subtree: true
+    });
+  });
+});
+</script>
+</body>
+</html>
