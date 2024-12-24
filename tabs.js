@@ -1,5 +1,4 @@
 import { getUUID } from './uuid.js';
-import './grapheme-length.js';
 
 // tabs [20241224]
 console.log('hogehgoe'.getGraphemeLength());
