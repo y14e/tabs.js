@@ -1,8 +1,6 @@
 import { getUUID } from './uuid.js';
 
 // tabs [20241224]
-console.log('hogehgoe'.getGraphemeLength());
-console.log(typeof String.prototype.getGraphemeLength);
 export default class Tabs {
   constructor(a) {
     const b = ':not(:scope [role="tabpanel"] *)';
