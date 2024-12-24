@@ -135,7 +135,6 @@ body {
             <button role="tab" aria-selected="false">More nested tab 2-3-3</button>
           </div>
         </div>
-    
       </div>
       <div role="tablist">
         <button role="tab" aria-selected="true">Nested tab 2-1</button>
@@ -175,7 +174,14 @@ body {
     <button role="tab" aria-selected="false">Tab 3 (vertical)</button>
   </div>
 </div>
-<script src="tabs.js"></script>
+<script type="module">
+import Tabs from './tabs.js';
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-tabs]').forEach(a => {
+    new Tabs(a);
+  });
+});
+</script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[role="tablist"]').forEach(a => {
