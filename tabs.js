@@ -1,6 +1,6 @@
 import { getUUID } from './uuid.js';
 
-export default class Tabs {
+export default class {
   constructor(a, options) {
     this.options = {...{ activation: 'automatic' }, ...options};
     this.activation = this.options.activation;
