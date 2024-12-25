@@ -16,21 +16,30 @@ body {
   --a: 0.4rem;
   --r1: 0.8rem;
   --r2: 0.8rem;
-  border-color: #000;
-  border-style: solid;
   display: flex;
   font-weight: bold;
   gap: 1.6rem;
   padding-inline: 3.2rem;
   text-align: center;
+  &::before {
+    background: #000;
+    content: "";
+    display: block;
+    height: var(--a);
+    left: 0;
+    right: 0;
+    position: absolute;
+  }
   &:has(+ [role="tabpanel"]) {
-    border-bottom-width: var(--a);
+    &::before {
+      bottom: 0;
+    }
     [role="tabpanel"] & {
       margin-top: 3.2rem;
     }
   }
-  [role="tabpanel"] + & {
-    border-top-width: var(--a);
+  [role="tabpanel"] + &::before {
+      top: 0;
   }
 }
 [role="tab"] {
@@ -38,20 +47,18 @@ body {
   border-inline: var(--r2) solid #0000;
   flex: 1;
   margin-inline: calc(-1 * var(--r2));
-  padding-inline: 1.6rem;
+  padding: 1.6rem;
   transition-duration: 0.3s;
   transition-property: background, color;
   [role="tablist"]:has(+ [role="tabpanel"]) & {
     border-top-left-radius: calc(var(--r1) + var(--r2)) var(--r1);
     border-top-right-radius: calc(var(--r1) + var(--r2)) var(--r1);
-    mask: radial-gradient(var(--r2) at var(--r2) 0, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) 100% / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
-    padding-block: 1.6rem calc(1.6rem - var(--a));
-  }
+    mask: radial-gradient(var(--r2) at var(--r2) 0, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) calc(100% - var(--a)) / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
+ }
   [role="tabpanel"] + [role="tablist"] & {
     border-bottom-left-radius: calc(var(--r1) + var(--r2)) var(--r1);
     border-bottom-right-radius: calc(var(--r1) + var(--r2)) var(--r1);
-    mask: radial-gradient(var(--r2) at var(--r2) 100%, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) 0 / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
-    padding-block: calc(1.6rem - var(--a)) 1.6rem;
+    mask: radial-gradient(var(--r2) at var(--r2) 100%, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) var(--a) / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
   }
   &[aria-selected="true"] {
     background: #000;
@@ -68,7 +75,7 @@ body {
 /* indicator */
 [role="tablist"] {
   position: relative;
-  &::before {
+  &::after {
     background: linear-gradient(100deg, #0000, #66c, #c69, #f96 50%, #0000);
     content: "";
     display: block;
@@ -79,11 +86,11 @@ body {
     transition-property: left, width;
     width: calc(var(--indicator-width) - 3.2rem - var(--r2) * 2);
   }
-  &:has(+ [role="tabpanel"])::before {
-    bottom: calc(-1 * var(--a));
+  &:has(+ [role="tabpanel"])::after {
+    bottom: 0;
   }
-  [role="tabpanel"] + &::before {
-    top: calc(-1 * var(--a));
+  [role="tabpanel"] + &::after {
+    top: 0;
   }
 }
 </style>
