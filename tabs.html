@@ -190,7 +190,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const c = a.querySelector('[aria-selected="true"]').getBoundingClientRect();
       b.setProperty('--indicator-left', `${c.left - a.getBoundingClientRect().left}px`);
       b.setProperty('--indicator-width', `${c.width}px`);
-    }
+    };
     new ResizeObserver(() => {
       b();
     }).observe(document.documentElement);
