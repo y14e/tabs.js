@@ -1,6 +1,5 @@
 import { getUUID } from './uuid.js';
 
-// tabs [20241225a]
 export default class Tabs {
   constructor(a, options = { auto: true }) {
     this.auto = options.auto;
