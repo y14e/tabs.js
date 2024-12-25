@@ -54,7 +54,7 @@ body {
     border-top-left-radius: calc(var(--r1) + var(--r2)) var(--r1);
     border-top-right-radius: calc(var(--r1) + var(--r2)) var(--r1);
     mask: radial-gradient(var(--r2) at var(--r2) 0, #0000 calc(100% - 0.5px), #000 calc(100% + 0.5px)) calc(-1 * var(--r2)) calc(100% - var(--a)) / 100% var(--r2) repeat-x, padding-box conic-gradient(#000 0 0);
- }
+  }
   [role="tabpanel"] + [role="tablist"] & {
     border-bottom-left-radius: calc(var(--r1) + var(--r2)) var(--r1);
     border-bottom-right-radius: calc(var(--r1) + var(--r2)) var(--r1);
@@ -63,6 +63,16 @@ body {
   &[aria-selected="true"] {
     background: #000;
     color: #fff;
+  }
+  &:focus-visible {
+    outline: none;
+    position: relative;
+    &::before {
+      content: "";
+      inset: 2px;
+      outline: auto;
+      position: absolute;
+    }
   }
 }
 [role="tabpanel"] {
@@ -181,11 +191,36 @@ body {
     <button type="button" role="tab" aria-selected="false">Tab 3 (vertical)</button>
   </div>
 </div>
+<br><br><br><br><br>
+<div data-tabs-manual>
+  <div role="tablist">
+    <button type="button" role="tab" aria-selected="true">Tab 1 (manual)</button>
+    <button type="button" role="tab" aria-selected="false">Tab 2 (manual)</button>
+    <button type="button" role="tab" aria-selected="false">Tab 3 (manual)</button>
+  </div>
+  <div role="tabpanel">
+    検索 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tabpanel" hidden="until-found">
+    けんさく Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tabpanel" hidden="until-found">
+    森田健作 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </div>
+  <div role="tablist">
+    <button type="button" role="tab" aria-selected="true">Tab 1 (manual)</button>
+    <button type="button" role="tab" aria-selected="false">Tab 2 (manual)</button>
+    <button type="button" role="tab" aria-selected="false">Tab 3 (manual)</button>
+  </div>
+</div>
 <script type="module">
 import Tabs from './tabs.js';
 window.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-tabs]').forEach(a => {
     new Tabs(a);
+  });
+  document.querySelectorAll('[data-tabs-manual]').forEach(a => {
+    new Tabs(a, { auto: false });
   });
 });
 </script>

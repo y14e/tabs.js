@@ -2,7 +2,8 @@ import { getUUID } from './uuid.js';
 
 // tabs [20241225a]
 export default class Tabs {
-  constructor(a) {
+  constructor(a, options = { auto: true }) {
+    this.auto = options.auto;
     const b = ':not(:scope [role="tabpanel"] *)';
     const c = a.querySelectorAll(`[role="tabpanel"]${b}`);
     a.querySelector('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((a, i) => {
@@ -42,7 +43,9 @@ export default class Tabs {
           const i = b.length;
           const j = b[g === e ? h - 1 < 0 ? i - 1 : h - 1 : g === f ? (h + 1) % i : g === 'Home' ? 0 : i - 1];
           j.focus();
-          j.click();
+          if (this.auto) {
+            j.click();
+          }
         });
         d.tabIndex = d.ariaSelected === 'true' ? 0 : -1;
       });
