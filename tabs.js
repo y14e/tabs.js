@@ -1,8 +1,9 @@
 import { getUUID } from './uuid.js';
 
 export default class Tabs {
-  constructor(a, options = { auto: true }) {
-    this.auto = options.auto;
+  constructor(a, options) {
+    this.options = {...{ activation: 'automatic' }, ...options};
+    this.activation = this.options.activation;
     const b = ':not(:scope [role="tabpanel"] *)';
     const c = a.querySelectorAll(`[role="tabpanel"]${b}`);
     a.querySelector('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((a, i) => {
@@ -42,7 +43,7 @@ export default class Tabs {
           const i = b.length;
           const j = b[g === e ? h - 1 < 0 ? i - 1 : h - 1 : g === f ? (h + 1) % i : g === 'Home' ? 0 : i - 1];
           j.focus();
-          if (this.auto) {
+          if (this.activation !== 'manual') {
             j.click();
           }
         });
