@@ -1,6 +1,6 @@
 import { getUUID } from './uuid.js';
 
-// tabs [20241224]
+// tabs [20241225]
 export default class Tabs {
   constructor(a) {
     const b = ':not(:scope [role="tabpanel"] *)';
@@ -59,7 +59,7 @@ export default class Tabs {
       //*/
     });
     c.forEach((c, i) => {
-      [...a.querySelectorAll(`[role="tab"]${b}`)].filter(a => [...a.parentElement.children].indexOf(a) === i).forEach(a => {
+      [...a.querySelectorAll(`[role="tab"]${b}`)].filter(a => [...a.closest('[role="tablist"]').querySelectorAll('[role="tab"]')].indexOf(a) === i).forEach(a => {
         a.setAttribute('aria-controls', c.id = c.id || `tab-panel-${getUUID()}`);
       });
       c.addEventListener('beforematch', a => {
