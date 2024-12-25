@@ -1,6 +1,6 @@
 import { getUUID } from './uuid.js';
 
-// tabs [20241225]
+// tabs [20241225a]
 export default class Tabs {
   constructor(a) {
     const b = ':not(:scope [role="tabpanel"] *)';
@@ -11,19 +11,16 @@ export default class Tabs {
     a.querySelectorAll(`[role="tablist"]${b}`).forEach((a, i) => {
       const b = a.querySelectorAll('[role="tab"]');
       b.forEach(d => {
-        d.addEventListener('click', () => {
-          const e = d.getAttribute('aria-controls');
-          [...document.querySelectorAll(`[aria-controls="${e}"]`)].flatMap(a => [...a.closest('[role="tablist"]').querySelectorAll('[role="tab"]')]).forEach(a => {
-            const b = a.getAttribute('aria-controls') === e;
-            a.ariaSelected = b;
-            if (b) {
-              a.removeAttribute('tabindex');
-            } else {
-              a.tabIndex = -1;
-            }
+        d.addEventListener('click', a => {
+          a.preventDefault();
+          const b = d.getAttribute('aria-controls');
+          [...document.querySelectorAll(`[aria-controls="${b}"]`)].flatMap(a => [...a.closest('[role="tablist"]').querySelectorAll('[role="tab"]')]).forEach(a => {
+            const c = a.getAttribute('aria-controls') === b;
+            a.ariaSelected = c;
+            a.tabIndex = c ? 0 : -1;
           });
           [...c].forEach(a => {
-            if (a.id === e) {
+            if (a.id === b) {
               a.removeAttribute('hidden');
               a.tabIndex = 0;
             } else {
@@ -47,10 +44,7 @@ export default class Tabs {
           j.focus();
           j.click();
         });
-        d.type = 'button';
-        if (d.ariaSelected !== 'true') {
-          d.tabIndex = -1;
-        }
+        d.tabIndex = d.ariaSelected === 'true' ? 0 : -1;
       });
       //* Optional
       if (i > 0) {
