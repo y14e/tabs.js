@@ -3,7 +3,7 @@ import { getUUID } from './uuid.js';
 export default class {
   constructor(a, options) {
     this.options = {...{ activation: 'automatic' }, ...options};
-    this.activation = this.options.activation;
+    this.activation = this.options.activation != 'manual' ? 'automatic' : 'manual';
     const b = ':not(:scope [role="tabpanel"] *)';
     const c = a.querySelectorAll(`[role="tabpanel"]${b}`);
     a.querySelector('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((a, i) => {
@@ -43,7 +43,7 @@ export default class {
           const i = b.length;
           const j = b[g === e ? h - 1 < 0 ? i - 1 : h - 1 : g === f ? (h + 1) % i : g === 'Home' ? 0 : i - 1];
           j.focus();
-          if (this.activation !== 'manual') {
+          if (this.activation === 'automatic') {
             j.click();
           }
         });
