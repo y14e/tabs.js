@@ -3,7 +3,7 @@ import { getUUID } from './uuid.js';
 export default class {
   constructor(a, options) {
     this.options = {...{ activation: 'automatic' }, ...options};
-    this.activation = this.options.activation != 'manual' ? 'automatic' : 'manual';
+    this.activation = this.options.activation !== 'manual' ? 'automatic' : 'manual';
     const b = ':not(:scope [role="tabpanel"] *)';
     const c = a.querySelectorAll(`[role="tabpanel"]${b}`);
     a.querySelector('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((a, i) => {
