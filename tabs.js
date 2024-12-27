@@ -1,11 +1,13 @@
 import { getUUID } from './uuid.js';
 
-export default class {
+class Tabs {
   constructor(element, options) {
-    this._element = element;
-    this._options = {...{ activation: 'automatic' }, ...options};
-    this._activation = this._options.activation !== 'manual' ? 'automatic' : 'manual';
-    const a = this._element;
+    this.element = element;
+    this.defaults = {
+      activation: 'automatic',
+      ...options
+    };
+    const a = this.element;
     const b = ':not(:scope [role="tabpanel"] *)';
     const c = a.querySelectorAll(`[role="tabpanel"]${b}`);
     a.querySelector('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((a, i) => {
@@ -45,7 +47,7 @@ export default class {
           const i = b.length;
           const j = b[g === e ? h - 1 < 0 ? i - 1 : h - 1 : g === f ? (h + 1) % i : g === 'Home' ? 0 : i - 1];
           j.focus();
-          if (this._activation === 'automatic') {
+          if (this.defaults.activation !== 'manual') {
             j.click();
           }
         });
@@ -70,3 +72,5 @@ export default class {
     });
   }
 }
+
+export default Tabs;
