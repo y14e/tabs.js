@@ -4,7 +4,7 @@ class Tabs {
   constructor(element, options) {
     this.element = element;
     this.defaults = {
-      activation: 'automatic',
+      autoActivation: true,
       ...options
     };
     const a = this.element;
@@ -47,7 +47,7 @@ class Tabs {
           const i = b.length;
           const j = b[g === e ? h - 1 < 0 ? i - 1 : h - 1 : g === f ? (h + 1) % i : g === 'Home' ? 0 : i - 1];
           j.focus();
-          if (this.defaults.activation === 'automatic') {
+          if (this.defaults.autoActivation) {
             j.click();
           }
         });
