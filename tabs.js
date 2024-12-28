@@ -53,7 +53,7 @@ class Tabs {
         });
         d.tabIndex = d.ariaSelected === 'true' ? 0 : -1;
       });
-      //* Optional
+      /* Optional
       if (i > 0) {
         a.ariaHidden = true;
       }
