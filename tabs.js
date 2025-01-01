@@ -3,73 +3,91 @@ import { getUUID } from './uuid.js';
 class Tabs {
   constructor(element, options) {
     this.element = element;
-    this.defaults = {
+    this.options = {
       autoActivation: true,
-      ...options
+      avoidDuplicates: false,
+      ...options,
     };
-    const a = this.element;
-    const b = ':not(:scope [role="tabpanel"] *)';
-    const c = a.querySelectorAll(`[role="tabpanel"]${b}`);
-    a.querySelector('[role="tablist"]').querySelectorAll('[role="tab"]').forEach((a, i) => {
-      c[i].setAttribute('aria-labelledby', `${c[i].getAttribute('aria-labelledby') || ''} ${a.id = a.id || 'tab-' + getUUID()}`.trim());
-    });
-    a.querySelectorAll(`[role="tablist"]${b}`).forEach((a, i) => {
-      const b = a.querySelectorAll('[role="tab"]');
-      b.forEach(d => {
-        d.addEventListener('click', a => {
-          a.preventDefault();
-          const b = d.getAttribute('aria-controls');
-          [...document.querySelectorAll(`[aria-controls="${b}"]`)].flatMap(a => [...a.closest('[role="tablist"]').querySelectorAll('[role="tab"]')]).forEach(a => {
-            const c = a.getAttribute('aria-controls') === b;
-            a.ariaSelected = c;
-            a.tabIndex = c ? 0 : -1;
-          });
-          [...c].forEach(a => {
-            if (a.id === b) {
-              a.removeAttribute('hidden');
-              a.tabIndex = 0;
-            } else {
-              a.hidden = 'until-found';
-              a.removeAttribute('tabindex');
-            }
-          });
+    const NOT_NESTED = ':not(:scope [role="tabpanel"] *)';
+    this.lists = this.element.querySelectorAll(`[role="tablist"]${NOT_NESTED}`);
+    this.tabs = this.element.querySelectorAll(`[role="tab"]${NOT_NESTED}`);
+    this.panels = this.element.querySelectorAll(`[role="tabpanel"]${NOT_NESTED}`);
+    this.lists[0].querySelectorAll('[role="tab"]')
+      .forEach((tab, index) => {
+        tab.id = tab.id || `tab-${getUUID()}`;
+        this.panels[index].setAttribute('aria-labelledby', `${this.panels[index].getAttribute('aria-labelledby') || ''} ${tab.id}`.trim());
+      });
+    this.lists
+      .forEach((list, index) => {
+        if (this.options.autoActivation && index > 0) {
+          list.ariaHidden = true;
+        }
+        list.addEventListener('keydown', event => {
+          this.keydown(event);
         });
-        d.addEventListener('keydown', c => {
-          const d = a.ariaOrientation !== 'vertical';
-          const e = d ? 'ArrowLeft' : 'ArrowUp';
-          const f = d ? 'ArrowRight' : 'ArrowDown';
-          const g = c.key;
-          if (![e, f, 'Home', 'End'].includes(g)) {
-            return;
-          }
-          c.preventDefault();
-          const h = [...b].indexOf(document.activeElement);
-          const i = b.length;
-          const j = b[g === e ? h - 1 < 0 ? i - 1 : h - 1 : g === f ? (h + 1) % i : g === 'Home' ? 0 : i - 1];
-          j.focus();
-          if (this.defaults.autoActivation) {
-            j.click();
-          }
+      });
+    this.tabs
+      .forEach(tab => {
+        tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
+        tab.addEventListener('click', event => {
+          this.click(event);
         });
-        d.tabIndex = d.ariaSelected === 'true' ? 0 : -1;
       });
-      /* Optional
-      if (i > 0) {
-        a.ariaHidden = true;
-      }
-      //*/
-    });
-    c.forEach((c, i) => {
-      [...a.querySelectorAll(`[role="tab"]${b}`)].filter(a => [...a.closest('[role="tablist"]').querySelectorAll('[role="tab"]')].indexOf(a) === i).forEach(a => {
-        a.setAttribute('aria-controls', c.id = c.id || `tab-panel-${getUUID()}`);
+    this.panels
+      .forEach((panel, index) => {
+        panel.id = panel.id || `tab-panel-${getUUID()}`;
+        [...this.tabs]
+          .filter((_, i) => i % (this.tabs.length / this.lists.length) === index)
+          .forEach(tab => {
+            tab.setAttribute('aria-controls', panel.id);
+          });
+        panel.hidden && (panel.tabIndex = 0);
+        panel.addEventListener('beforematch', event => {
+          this.beforematch(event);
+        });
       });
-      c.addEventListener('beforematch', a => {
-        document.querySelector(`[aria-controls="${a.target.id}"]`).click();
+  }
+  keydown(event) {
+    const horizontal = this.lists[0].ariaOrientation !== 'vertical';
+    const previous = horizontal ? 'ArrowLeft' : 'ArrowUp';
+    const next = horizontal ? 'ArrowRight' : 'ArrowDown';
+    const key = event.key;
+    if (![previous, next, 'Home', 'End'].includes(key)) {
+      return;
+    }
+    event.preventDefault();
+    const tabs = event.currentTarget.querySelectorAll('[role="tab"]');
+    const index = [...tabs].indexOf(document.activeElement);
+    const length = tabs.length;
+    const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
+    tab.focus();
+    if (this.options.autoActivation) {
+      tab.click();
+    }
+  }
+  click(event) {
+    event.preventDefault();
+    const id = event.currentTarget.getAttribute('aria-controls');
+    [...document.querySelectorAll(`[aria-controls="${id}"]`)]
+      .flatMap(tab => [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')])
+      .forEach(tab => {
+        const selected = tab.getAttribute('aria-controls') === id;
+        tab.ariaSelected = selected;
+        tab.tabIndex = selected ? 0 : -1;
       });
-      if (!c.hidden) {
-        c.tabIndex = 0;
-      }
-    });
+    [...this.panels]
+      .forEach(panel => {
+        if (panel.id === id) {
+          panel.removeAttribute('hidden');
+          panel.tabIndex = 0;
+        } else {
+          panel.hidden = 'until-found';
+          panel.removeAttribute('tabindex');
+        }
+      });
+  }
+  beforematch(event) {
+    document.querySelector(`[aria-controls="${event.currentTarget.id}"]`).click();
   }
 }
 
