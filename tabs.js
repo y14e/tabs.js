@@ -41,7 +41,9 @@ class Tabs {
           .forEach(tab => {
             tab.setAttribute('aria-controls', panel.id);
           });
-        panel.hidden && (panel.tabIndex = 0);
+        if (panel.hidden) {
+          panel.tabIndex = 0;
+        }
         panel.addEventListener('beforematch', event => {
           this.beforematch(event);
         });
