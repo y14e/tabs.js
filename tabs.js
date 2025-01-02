@@ -12,14 +12,15 @@ class Tabs {
     this.lists = this.element.querySelectorAll(`[role="tablist"]${NOT_NESTED}`);
     this.tabs = this.element.querySelectorAll(`[role="tab"]${NOT_NESTED}`);
     this.panels = this.element.querySelectorAll(`[role="tabpanel"]${NOT_NESTED}`);
-    this.lists[0].querySelectorAll('[role="tab"]')
-      .forEach((tab, index) => {
-        tab.id = tab.id || `tab-${getUUID()}`;
-        this.panels[index].setAttribute('aria-labelledby', `${this.panels[index].getAttribute('aria-labelledby') || ''} ${tab.id}`.trim());
-      });
     this.lists
       .forEach((list, index) => {
-        if (this.options.avoidDuplicates && index > 0) {
+        if (index === 0) {
+          list.querySelectorAll('[role="tab"]')
+            .forEach((tab, index) => {
+              tab.id = tab.id || `tab-${getUUID()}`;
+              this.panels[index].setAttribute('aria-labelledby', `${this.panels[index].getAttribute('aria-labelledby') || ''} ${tab.id}`.trim());
+            });
+        } else if (this.options.avoidDuplicates) {
           list.ariaHidden = true;
         }
         list.addEventListener('keydown', event => {
