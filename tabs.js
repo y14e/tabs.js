@@ -19,7 +19,7 @@ class Tabs {
       });
     this.lists
       .forEach((list, index) => {
-        if (this.options.autoActivation && index > 0) {
+        if (this.options.avoidDuplicates && index > 0) {
           list.ariaHidden = true;
         }
         list.addEventListener('keydown', event => {
