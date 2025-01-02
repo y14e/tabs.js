@@ -51,7 +51,8 @@ class Tabs {
       });
   }
   keydown(event) {
-    const horizontal = this.lists[0].ariaOrientation !== 'vertical';
+    const list = event.currentTarget;
+    const horizontal = list.ariaOrientation !== 'vertical';
     const previous = horizontal ? 'ArrowLeft' : 'ArrowUp';
     const next = horizontal ? 'ArrowRight' : 'ArrowDown';
     const key = event.key;
@@ -59,7 +60,7 @@ class Tabs {
       return;
     }
     event.preventDefault();
-    const tabs = event.currentTarget.querySelectorAll('[role="tab"]');
+    const tabs = list.querySelectorAll('[role="tab"]');
     const index = [...tabs].indexOf(document.activeElement);
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
