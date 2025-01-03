@@ -16,19 +16,17 @@ class Tabs {
   }
   initialize() {
     this.lists.forEach((list, index) => {
-      if (index === 0) {
-        list.querySelectorAll('[role="tab"]').forEach((tab, index) => {
-          tab.id = tab.id || `tab-${getUUID()}`;
-          this.panels[index].setAttribute('aria-labelledby', `${this.panels[index].getAttribute('aria-labelledby') || ''} ${tab.id}`.trim());
-        });
-      } else if (this.options.avoidDuplicates) {
+      if (this.options.avoidDuplicates && index > 0) {
         list.ariaHidden = true;
       }
       list.addEventListener('keydown', event => {
         this.keydown(event);
       });
     });
-    this.tabs.forEach(tab => {
+    this.tabs.forEach((tab, index) => {
+      if (index < this.panels.length) {
+        tab.id = tab.id || `tab-${getUUID()}`;
+      }
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', event => {
         this.click(event);
@@ -36,17 +34,16 @@ class Tabs {
     });
     this.panels.forEach((panel, index) => {
       panel.id = panel.id || `tab-panel-${getUUID()}`;
-      this.tabs.forEach((tab, i) => {
-        if (i % (this.tabs.length / this.lists.length) === index) {
-          tab.setAttribute('aria-controls', panel.id);
-        }
-      });
+      panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[index].id}`.trim());
       if (panel.hidden) {
         panel.tabIndex = 0;
       }
       panel.addEventListener('beforematch', event => {
         this.beforematch(event);
       });
+    });
+    this.tabs.forEach((tab, index) => {
+      tab.setAttribute('aria-controls', this.panels[index % this.panels.length].id);
     });
   }
   keydown(event) {
@@ -80,13 +77,11 @@ class Tabs {
   click(event) {
     event.preventDefault();
     const id = event.currentTarget.getAttribute('aria-controls');
-    [...document.querySelectorAll(`[aria-controls="${id}"]`)]
-      .flatMap(tab => [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')])
-      .forEach(tab => {
-        const selected = tab.getAttribute('aria-controls') === id;
-        tab.ariaSelected = selected;
-        tab.tabIndex = selected ? 0 : -1;
-      });
+    [...this.tabs].forEach(tab => {
+      const selected = tab.getAttribute('aria-controls') === id;
+      tab.ariaSelected = selected;
+      tab.tabIndex = selected ? 0 : -1;
+    });
     [...this.panels].forEach(panel => {
       if (panel.id === id) {
         panel.removeAttribute('hidden');
