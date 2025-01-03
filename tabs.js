@@ -36,11 +36,11 @@ class Tabs {
     });
     this.panels.forEach((panel, index) => {
       panel.id = panel.id || `tab-panel-${getUUID()}`;
-      [...this.tabs]
-        .filter((_, i) => i % (this.tabs.length / this.lists.length) === index)
-        .forEach(tab => {
+      this.tabs.forEach((tab, i) => {
+        if (i % (this.tabs.length / this.lists.length) === index) {
           tab.setAttribute('aria-controls', panel.id);
-        });
+        }
+      });
       if (panel.hidden) {
         panel.tabIndex = 0;
       }
