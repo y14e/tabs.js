@@ -1,4 +1,4 @@
-import { getUUID } from './uuid.js';
+import getUUID from './uuid.js';
 
 class Tabs {
   constructor(element, options) {
