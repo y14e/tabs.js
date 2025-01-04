@@ -1,5 +1,3 @@
-import { getUUID } from './uuid.js';
-
 class Tabs {
   constructor(element, options) {
     this.element = element;
@@ -15,6 +13,9 @@ class Tabs {
     this.initialize();
   }
   initialize() {
+    const id = () => {
+      return Math.random().toString(16).slice(2, 8).padEnd(6, '0');
+    };
     this.lists.forEach((list, index) => {
       if (this.options.avoidDuplicates && index > 0) {
         list.ariaHidden = true;
@@ -25,7 +26,7 @@ class Tabs {
     });
     this.tabs.forEach((tab, index) => {
       if (index < this.panels.length) {
-        tab.id = tab.id || `tab-${getUUID()}`;
+        tab.id = tab.id || `tab-${id()}`;
       }
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', event => {
@@ -33,7 +34,7 @@ class Tabs {
       });
     });
     this.panels.forEach((panel, index) => {
-      panel.id = panel.id || `tab-panel-${getUUID()}`;
+      panel.id = panel.id || `tab-panel-${id()}`;
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[index].id}`.trim());
       if (panel.hidden) {
         panel.tabIndex = 0;
