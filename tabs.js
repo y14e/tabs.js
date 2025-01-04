@@ -59,16 +59,7 @@ class Tabs {
     const tabs = list.querySelectorAll('[role="tab"]');
     const index = [...tabs].indexOf(document.activeElement);
     const length = tabs.length;
-    const tab =
-      tabs[
-        key === previous ?
-          index - 1 < 0 ?
-            length - 1
-          : index - 1
-        : key === next ? (index + 1) % length
-        : key === 'Home' ? 0
-        : length - 1
-      ];
+    const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
     tab.focus();
     if (this.options.autoActivation) {
       tab.click();
