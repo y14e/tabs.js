@@ -16,16 +16,16 @@ class Tabs {
     const id = () => {
       return Math.random().toString(16).slice(2, 8).padEnd(6, '0');
     };
-    this.lists.forEach((list, index) => {
-      if (this.options.avoidDuplicates && index > 0) {
+    this.lists.forEach((list, i) => {
+      if (this.options.avoidDuplicates && i > 0) {
         list.ariaHidden = true;
       }
       list.addEventListener('keydown', event => {
         this.keydown(event);
       });
     });
-    this.tabs.forEach((tab, index) => {
-      if (index < this.panels.length) {
+    this.tabs.forEach((tab, i) => {
+      if (i < this.panels.length) {
         tab.id = tab.id || `tab-${id()}`;
       }
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
@@ -33,9 +33,9 @@ class Tabs {
         this.click(event);
       });
     });
-    this.panels.forEach((panel, index) => {
+    this.panels.forEach((panel, i) => {
       panel.id = panel.id || `tab-panel-${id()}`;
-      panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[index].id}`.trim());
+      panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
       if (panel.hidden) {
         panel.tabIndex = 0;
       }
@@ -43,8 +43,8 @@ class Tabs {
         this.beforematch(event);
       });
     });
-    this.tabs.forEach((tab, index) => {
-      tab.setAttribute('aria-controls', this.panels[index % this.panels.length].id);
+    this.tabs.forEach((tab, i) => {
+      tab.setAttribute('aria-controls', this.panels[i % this.panels.length].id);
     });
   }
   keydown(event) {
