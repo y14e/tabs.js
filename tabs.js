@@ -52,7 +52,7 @@ class Tabs {
     const horizontal = list.ariaOrientation !== 'vertical';
     const previous = horizontal ? 'ArrowLeft' : 'ArrowUp';
     const next = horizontal ? 'ArrowRight' : 'ArrowDown';
-    const key = event.key;
+    const { key } = event;
     if (![previous, next, 'Home', 'End'].includes(key)) {
       return;
     }
