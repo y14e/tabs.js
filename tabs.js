@@ -5,17 +5,11 @@ class Tabs {
       autoActivation: true,
       avoidDuplicates: false,
       ...options,
-      selector: {
-        list: '[role="tablist"]',
-        tab: '[role="tab"]',
-        panel: '[role="tabpanel"]',
-        ...options?.selector,
-      },
     };
-    const NOT_NESTED = `:not(:scope ${this.options.selector.panel} *)`;
-    this.lists = this.element.querySelectorAll(`${this.options.selector.list}${NOT_NESTED}`);
-    this.tabs = this.element.querySelectorAll(`${this.options.selector.tab}${NOT_NESTED}`);
-    this.panels = this.element.querySelectorAll(`${this.options.selector.panel}${NOT_NESTED}`);
+    const NOT_NESTED = ':not(:scope [role="tabpanel"] *)';
+    this.lists = this.element.querySelectorAll(`[role="tablist"]${NOT_NESTED}`);
+    this.tabs = this.element.querySelectorAll(`[role="tab"]${NOT_NESTED}`);
+    this.panels = this.element.querySelectorAll(`[role="tabpanel"]${NOT_NESTED}`);
     this.initialize();
   }
   initialize() {
@@ -63,7 +57,7 @@ class Tabs {
       return;
     }
     event.preventDefault();
-    const tabs = list.querySelectorAll(`${this.options.selector.tab}`);
+    const tabs = list.querySelectorAll('[role="tab"]');
     const index = [...tabs].indexOf(document.activeElement);
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
