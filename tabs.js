@@ -63,13 +63,13 @@ class Tabs {
       return;
     }
     event.preventDefault();
-    const active = document.activeElement;
+    const focused = document.activeElement;
     if ([' ', 'Enter'].includes(key)) {
-      active.click();
+      focused.click();
       return;
     }
     const tabs = list.querySelectorAll(this.options.selector.tab);
-    const index = [...tabs].indexOf(active);
+    const index = [...tabs].indexOf(focused);
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
     tab.focus();
