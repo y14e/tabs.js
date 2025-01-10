@@ -32,7 +32,7 @@ class Tabs {
     });
     this.tabs.forEach((tab, i) => {
       if (i < this.panels.length) {
-        tab.id = tab.id || `tab-${id()}`;
+        tab.id ||= `tab-${id()}`;
       }
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
