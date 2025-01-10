@@ -34,13 +34,13 @@ class Tabs {
       if (i < this.panels.length) {
         tab.id = tab.id || `tab-${id()}`;
       }
+      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', event => {
         this.click(event);
       });
     });
     this.panels.forEach((panel, i) => {
-      panel.id = panel.id || `tab-panel-${id()}`;
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
       if (panel.hidden) {
         panel.tabIndex = 0;
@@ -48,9 +48,6 @@ class Tabs {
       panel.addEventListener('beforematch', event => {
         this.beforematch(event);
       });
-    });
-    this.tabs.forEach((tab, i) => {
-      tab.setAttribute('aria-controls', this.panels[i % this.panels.length].id);
     });
   }
   keydown(event) {
