@@ -50,7 +50,7 @@ class Tabs {
       });
     });
   }
-  toggle(tab) {
+  activate(tab) {
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const selected = tab.getAttribute('aria-controls') === id;
@@ -69,7 +69,7 @@ class Tabs {
   }
   click(e) {
     e.preventDefault();
-    this.toggle(e.currentTarget);
+    this.activate(e.currentTarget);
   }
   keydown(e) {
     const list = e.currentTarget;
