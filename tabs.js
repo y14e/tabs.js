@@ -26,8 +26,8 @@ class Tabs {
       if (this.options.avoidDuplicates && i > 0) {
         list.ariaHidden = true;
       }
-      list.addEventListener('keydown', event => {
-        this.keydown(event);
+      list.addEventListener('keydown', e => {
+        this.keydown(e);
       });
     });
     this.tabs.forEach((tab, i) => {
@@ -36,8 +36,8 @@ class Tabs {
       }
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
-      tab.addEventListener('click', event => {
-        this.click(event);
+      tab.addEventListener('click', e => {
+        this.click(e);
       });
     });
     this.panels.forEach((panel, i) => {
@@ -45,8 +45,8 @@ class Tabs {
       if (panel.hidden) {
         panel.tabIndex = 0;
       }
-      panel.addEventListener('beforematch', event => {
-        this.beforematch(event);
+      panel.addEventListener('beforematch', e => {
+        this.beforematch(e);
       });
     });
   }
@@ -67,20 +67,20 @@ class Tabs {
       }
     });
   }
-  click(event) {
-    event.preventDefault();
-    this.toggle(event.currentTarget);
+  click(e) {
+    e.preventDefault();
+    this.toggle(e.currentTarget);
   }
-  keydown(event) {
-    const list = event.currentTarget;
+  keydown(e) {
+    const list = e.currentTarget;
     const horizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${horizontal ? 'Left' : 'Up'}`;
     const next = `Arrow${horizontal ? 'Right' : 'Down'}`;
-    const { key } = event;
+    const { key } = e;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) {
       return;
     }
-    event.preventDefault();
+    e.preventDefault();
     const active = document.activeElement;
     if ([' ', 'Enter'].includes(key)) {
       active.click();
@@ -95,8 +95,8 @@ class Tabs {
       tab.click();
     }
   }
-  beforematch(event) {
-    document.querySelector(`[aria-controls="${event.currentTarget.id}"]`).click();
+  beforematch(e) {
+    document.querySelector(`[aria-controls="${e.currentTarget.id}"]`).click();
   }
 }
 
