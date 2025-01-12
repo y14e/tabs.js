@@ -20,7 +20,7 @@ class Tabs {
   }
   initialize() {
     const id = () => {
-      return Math.random().toString(16).slice(2, 8).padEnd(6, '0');
+      return Math.random().toString(36).slice(-8);
     };
     this.lists.forEach((list, i) => {
       if (this.options.avoidDuplicates && i > 0) {
