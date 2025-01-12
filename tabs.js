@@ -67,6 +67,10 @@ class Tabs {
       }
     });
   }
+  click(event) {
+    event.preventDefault();
+    this.toggle(event.currentTarget);
+  }
   keydown(event) {
     const list = event.currentTarget;
     const horizontal = list.ariaOrientation !== 'vertical';
@@ -90,10 +94,6 @@ class Tabs {
     if (this.options.autoActivation) {
       tab.click();
     }
-  }
-  click(event) {
-    event.preventDefault();
-    this.toggle(event.currentTarget);
   }
   beforematch(event) {
     document.querySelector(`[aria-controls="${event.currentTarget.id}"]`).click();
