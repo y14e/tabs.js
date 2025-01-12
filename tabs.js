@@ -50,6 +50,23 @@ class Tabs {
       });
     });
   }
+  toggle(tab) {
+    const id = tab.getAttribute('aria-controls');
+    [...this.tabs].forEach(tab => {
+      const selected = tab.getAttribute('aria-controls') === id;
+      tab.ariaSelected = selected;
+      tab.tabIndex = selected ? 0 : -1;
+    });
+    [...this.panels].forEach(panel => {
+      if (panel.id === id) {
+        panel.removeAttribute('hidden');
+        panel.tabIndex = 0;
+      } else {
+        panel.hidden = 'until-found';
+        panel.removeAttribute('tabindex');
+      }
+    });
+  }
   keydown(event) {
     const list = event.currentTarget;
     const horizontal = list.ariaOrientation !== 'vertical';
@@ -76,21 +93,7 @@ class Tabs {
   }
   click(event) {
     event.preventDefault();
-    const id = event.currentTarget.getAttribute('aria-controls');
-    [...this.tabs].forEach(tab => {
-      const selected = tab.getAttribute('aria-controls') === id;
-      tab.ariaSelected = selected;
-      tab.tabIndex = selected ? 0 : -1;
-    });
-    [...this.panels].forEach(panel => {
-      if (panel.id === id) {
-        panel.removeAttribute('hidden');
-        panel.tabIndex = 0;
-      } else {
-        panel.hidden = 'until-found';
-        panel.removeAttribute('tabindex');
-      }
-    });
+    this.toggle(event.currentTarget);
   }
   beforematch(event) {
     document.querySelector(`[aria-controls="${event.currentTarget.id}"]`).click();
