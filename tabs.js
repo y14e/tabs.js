@@ -27,7 +27,7 @@ class Tabs {
         list.ariaHidden = true;
       }
       list.addEventListener('keydown', e => {
-        this.keydown(e);
+        this.handleKeyDown(e);
       });
     });
     this.tabs.forEach((tab, i) => {
@@ -37,7 +37,7 @@ class Tabs {
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', e => {
-        this.click(e);
+        this.handleClick(e);
       });
     });
     this.panels.forEach((panel, i) => {
@@ -46,7 +46,7 @@ class Tabs {
         panel.tabIndex = 0;
       }
       panel.addEventListener('beforematch', e => {
-        this.beforematch(e);
+        this.handleBeforeMatch(e);
       });
     });
   }
@@ -67,11 +67,11 @@ class Tabs {
       }
     });
   }
-  click(e) {
+  handleClick(e) {
     e.preventDefault();
     this.activate(e.currentTarget);
   }
-  keydown(e) {
+  handleKeyDown(e) {
     const list = e.currentTarget;
     const horizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${horizontal ? 'Left' : 'Up'}`;
@@ -95,7 +95,7 @@ class Tabs {
       tab.click();
     }
   }
-  beforematch(e) {
+  handleBeforeMatch(e) {
     document.querySelector(`[aria-controls="${e.currentTarget.id}"]`).click();
   }
 }
