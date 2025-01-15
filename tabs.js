@@ -53,9 +53,9 @@ class Tabs {
   activate(tab) {
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
-      const selected = tab.getAttribute('aria-controls') === id;
-      tab.ariaSelected = selected;
-      tab.tabIndex = selected ? 0 : -1;
+      const isSelected = tab.getAttribute('aria-controls') === id;
+      tab.ariaSelected = isSelected;
+      tab.tabIndex = isSelected ? 0 : -1;
     });
     [...this.panels].forEach(panel => {
       if (panel.id === id) {
@@ -73,9 +73,9 @@ class Tabs {
   }
   handleKeyDown(e) {
     const list = e.currentTarget;
-    const horizontal = list.ariaOrientation !== 'vertical';
-    const previous = `Arrow${horizontal ? 'Left' : 'Up'}`;
-    const next = `Arrow${horizontal ? 'Right' : 'Down'}`;
+    const isHorizontal = list.ariaOrientation !== 'vertical';
+    const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
+    const next = `Arrow${isHorizontal ? 'Right' : 'Down'}`;
     const { key } = e;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) {
       return;
