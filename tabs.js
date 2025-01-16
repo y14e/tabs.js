@@ -24,7 +24,7 @@ class Tabs {
     };
     this.lists.forEach((list, i) => {
       if (this.options.avoidDuplicates && i > 0) {
-        list.setAttribute('aria-hidden', true);
+        list.ariaHidden = true;
       }
       list.addEventListener('keydown', e => {
         this.handleKeyDown(e);
@@ -35,15 +35,15 @@ class Tabs {
         tab.id ||= `tab-${id()}`;
       }
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id()}`));
-      tab.setAttribute('tabindex', tab.getAttribute('aria-selected') === 'true' ? 0 : -1);
+      tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', e => {
         this.handleClick(e);
       });
     });
     this.panels.forEach((panel, i) => {
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
-      if (panel.hasAttribute('hidden')) {
-        panel.setAttribute('tabindex', 0);
+      if (panel.hidden) {
+        panel.tabIndex = 0;
       }
       panel.addEventListener('beforematch', e => {
         this.handleBeforeMatch(e);
@@ -54,15 +54,15 @@ class Tabs {
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
-      tab.setAttribute('aria-selected', isSelected);
-      tab.setAttribute('tabindex', isSelected ? 0 : -1);
+      tab.ariaSelected = isSelected;
+      tab.tabIndex = isSelected ? 0 : -1;
     });
     [...this.panels].forEach(panel => {
       if (panel.id === id) {
         panel.removeAttribute('hidden');
-        panel.setAttribute('tabindex', 0);
+        panel.tabIndex = 0;
       } else {
-        panel.setAttribute('hidden', 'until-found');
+        panel.hidden = 'until-found';
         panel.removeAttribute('tabindex');
       }
     });
@@ -73,7 +73,7 @@ class Tabs {
   }
   handleKeyDown(e) {
     const list = e.currentTarget;
-    const isHorizontal = list.getAttribute('aria-orientation') !== 'vertical';
+    const isHorizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
     const next = `Arrow${isHorizontal ? 'Right' : 'Down'}`;
     const { key } = e;
