@@ -18,6 +18,7 @@ class Tabs {
     this.panels = this.element.querySelectorAll(`${this.options.selector.panel}${NOT_NESTED}`);
     this.initialize();
   }
+
   initialize() {
     const id = () => {
       return Math.random().toString(36).slice(-8);
@@ -50,6 +51,7 @@ class Tabs {
       });
     });
   }
+
   activate(tab) {
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
@@ -67,10 +69,12 @@ class Tabs {
       }
     });
   }
+
   handleClick(e) {
     e.preventDefault();
     this.activate(e.currentTarget);
   }
+
   handleKeyDown(e) {
     const list = e.currentTarget;
     const isHorizontal = list.ariaOrientation !== 'vertical';
@@ -95,6 +99,7 @@ class Tabs {
       tab.click();
     }
   }
+
   handleBeforeMatch(e) {
     document.querySelector(`[aria-controls="${e.currentTarget.id}"]`).click();
   }
