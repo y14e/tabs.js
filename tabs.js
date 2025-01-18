@@ -64,7 +64,7 @@ class Tabs {
         panel.removeAttribute('hidden');
         panel.tabIndex = 0;
       } else {
-        panel.hidden = 'until-found';
+        panel.setAttribute('hidden', 'until-found');
         panel.removeAttribute('tabindex');
       }
     });
