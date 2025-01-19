@@ -35,7 +35,7 @@ class Tabs {
     this.initialize();
   }
 
-  private initialize(): void {
+  private initialize() {
     const id = (): string => {
       return Math.random().toString(36).slice(-8);
     };
@@ -68,7 +68,7 @@ class Tabs {
     });
   }
 
-  private activate(tab: HTMLElement): void {
+  private activate(tab: HTMLElement) {
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
@@ -86,12 +86,12 @@ class Tabs {
     });
   }
 
-  private handleClick(e: MouseEvent): void {
+  private handleClick(e: MouseEvent) {
     e.preventDefault();
     this.activate(e.currentTarget as HTMLElement);
   }
 
-  private handleKeyDown(e: KeyboardEvent): void {
+  private handleKeyDown(e: KeyboardEvent) {
     const list = e.currentTarget as HTMLElement;
     const isHorizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
@@ -116,7 +116,7 @@ class Tabs {
     }
   }
 
-  private handleBeforeMatch(e: Event): void {
+  private handleBeforeMatch(e: Event) {
     (document.querySelector(`[aria-controls="${(e.currentTarget as HTMLElement).id}"]`) as HTMLElement).click();
   }
 }
