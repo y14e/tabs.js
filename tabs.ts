@@ -36,7 +36,7 @@ class Tabs {
   }
 
   private initialize() {
-    const id = (): string => {
+    const id = () => {
       return Math.random().toString(36).slice(-8);
     };
     this.lists.forEach((list, i) => {
