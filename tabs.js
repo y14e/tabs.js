@@ -25,7 +25,7 @@ class Tabs {
     };
     this.lists.forEach((list, i) => {
       if (this.options.avoidDuplicates && i > 0) {
-        list.ariaHidden = true;
+        list.ariaHidden = 'true';
       }
       list.addEventListener('keydown', e => {
         this.handleKeyDown(e);
@@ -56,7 +56,7 @@ class Tabs {
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
-      tab.ariaSelected = isSelected;
+      tab.setAttribute('aria-selected', String(isSelected));
       tab.tabIndex = isSelected ? 0 : -1;
     });
     [...this.panels].forEach(panel => {
