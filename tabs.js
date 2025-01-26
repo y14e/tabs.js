@@ -20,7 +20,7 @@ class Tabs {
   }
 
   initialize() {
-    const id = () => {
+    const _id = () => {
       return Math.random().toString(36).slice(-8);
     };
     this.lists.forEach((list, i) => {
@@ -33,9 +33,9 @@ class Tabs {
     });
     this.tabs.forEach((tab, i) => {
       if (i < this.panels.length) {
-        tab.id ||= `tab-${id()}`;
+        tab.id ||= `tab-${_id()}`;
       }
-      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id()}`));
+      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${_id()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', e => {
         this.handleClick(e);
