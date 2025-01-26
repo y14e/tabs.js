@@ -36,9 +36,6 @@ class Tabs {
   }
 
   private initialize() {
-    const _id = () => {
-      return Math.random().toString(36).slice(-8);
-    };
     this.lists.forEach((list, i) => {
       if (this.options.avoidDuplicates && i > 0) {
         list.ariaHidden = 'true';
@@ -47,11 +44,14 @@ class Tabs {
         this.handleKeyDown(e);
       });
     });
+    const generateId = () => {
+      return Math.random().toString(36).slice(-8);
+    };
     this.tabs.forEach((tab, i) => {
       if (i < this.panels.length) {
-        tab.id ||= `tab-${_id()}`;
+        tab.id ||= `tab-${generateId()}`;
       }
-      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${_id()}`));
+      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${generateId()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', e => {
         this.handleClick(e);
