@@ -40,8 +40,8 @@ class Tabs {
       if (this.options.avoidDuplicates && i > 0) {
         list.ariaHidden = 'true';
       }
-      list.addEventListener('keydown', e => {
-        this.handleKeyDown(e);
+      list.addEventListener('keydown', event => {
+        this.handleKeyDown(event);
       });
     });
     const generateId = () => {
@@ -53,8 +53,8 @@ class Tabs {
       }
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${generateId()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
-      tab.addEventListener('click', e => {
-        this.handleClick(e);
+      tab.addEventListener('click', event => {
+        this.handleClick(event);
       });
     });
     this.panels.forEach((panel, i) => {
@@ -62,27 +62,27 @@ class Tabs {
       if (panel.hidden) {
         panel.tabIndex = 0;
       }
-      panel.addEventListener('beforematch', e => {
-        this.handleBeforeMatch(e);
+      panel.addEventListener('beforematch', event => {
+        this.handleBeforeMatch(event);
       });
     });
   }
 
-  private handleClick(e: MouseEvent) {
-    e.preventDefault();
-    this.activate(e.currentTarget as HTMLElement);
+  private handleClick(event: MouseEvent) {
+    event.preventDefault();
+    this.activate(event.currentTarget as HTMLElement);
   }
 
-  private handleKeyDown(e: KeyboardEvent) {
-    const list = e.currentTarget as HTMLElement;
+  private handleKeyDown(event: KeyboardEvent) {
+    const list = event.currentTarget as HTMLElement;
     const isHorizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
     const next = `Arrow${isHorizontal ? 'Right' : 'Down'}`;
-    const { key } = e;
+    const { key } = event;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) {
       return;
     }
-    e.preventDefault();
+    event.preventDefault();
     const active = document.activeElement as HTMLElement;
     if ([' ', 'Enter'].includes(key)) {
       active.click();
@@ -98,8 +98,8 @@ class Tabs {
     }
   }
 
-  private handleBeforeMatch(e: Event) {
-    (document.querySelector(`[aria-controls="${(e.currentTarget as HTMLElement).id}"]`) as HTMLElement).click();
+  private handleBeforeMatch(event: Event) {
+    (document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).id}"]`) as HTMLElement).click();
   }
 
   activate(tab: HTMLElement) {

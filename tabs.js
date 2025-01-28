@@ -24,8 +24,8 @@ class Tabs {
       if (this.options.avoidDuplicates && i > 0) {
         list.ariaHidden = 'true';
       }
-      list.addEventListener('keydown', e => {
-        this.handleKeyDown(e);
+      list.addEventListener('keydown', event => {
+        this.handleKeyDown(event);
       });
     });
     const generateId = () => {
@@ -37,8 +37,8 @@ class Tabs {
       }
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${generateId()}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
-      tab.addEventListener('click', e => {
-        this.handleClick(e);
+      tab.addEventListener('click', event => {
+        this.handleClick(event);
       });
     });
     this.panels.forEach((panel, i) => {
@@ -46,27 +46,27 @@ class Tabs {
       if (panel.hidden) {
         panel.tabIndex = 0;
       }
-      panel.addEventListener('beforematch', e => {
-        this.handleBeforeMatch(e);
+      panel.addEventListener('beforematch', event => {
+        this.handleBeforeMatch(event);
       });
     });
   }
 
-  handleClick(e) {
-    e.preventDefault();
-    this.activate(e.currentTarget);
+  handleClick(event) {
+    event.preventDefault();
+    this.activate(event.currentTarget);
   }
 
-  handleKeyDown(e) {
-    const list = e.currentTarget;
+  handleKeyDown(event) {
+    const list = event.currentTarget;
     const isHorizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
     const next = `Arrow${isHorizontal ? 'Right' : 'Down'}`;
-    const { key } = e;
+    const { key } = event;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) {
       return;
     }
-    e.preventDefault();
+    event.preventDefault();
     const active = document.activeElement;
     if ([' ', 'Enter'].includes(key)) {
       active.click();
@@ -82,8 +82,8 @@ class Tabs {
     }
   }
 
-  handleBeforeMatch(e) {
-    document.querySelector(`[aria-controls="${e.currentTarget.id}"]`).click();
+  handleBeforeMatch(event) {
+    document.querySelector(`[aria-controls="${event.currentTarget.id}"]`).click();
   }
 
   activate(tab) {
