@@ -26,7 +26,7 @@ class Tabs {
       selector: {
         list: '[role="tablist"]',
         tab: '[role="tab"]',
-        content: '[role="tablist"] + *',
+        content: '[role="tablist"] + :not([role="tabpanel"])',
         panel: '[role="tabpanel"]',
         ...options?.selector,
       },
@@ -113,22 +113,24 @@ class Tabs {
       tab.setAttribute('aria-selected', String(isSelected));
       tab.tabIndex = isSelected ? 0 : -1;
     });
-    this.content.addEventListener('transitionend', function handleTransitionEnd(event) {
-      if (event.propertyName !== 'height') {
-        return;
-      }
-      this.style.height = this.style.overflow = '';
-      this.removeEventListener('transitionend', handleTransitionEnd);
-    });
-    this.content.style.cssText += `
-      height: ${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px;
-      overflow: clip;
-    `;
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        this.content.style.height = `${document.getElementById(id!)!.scrollHeight}px`;
+    if (this.content) {
+      this.content.addEventListener('transitionend', function handleTransitionEnd(event) {
+        if (event.propertyName !== 'height') {
+          return;
+        }
+        this.style.height = this.style.overflow = '';
+        this.removeEventListener('transitionend', handleTransitionEnd);
       });
-    });
+      this.content.style.cssText += `
+        height: ${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px;
+        overflow: clip;
+      `;
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          this.content.style.height = `${document.getElementById(id!)!.scrollHeight}px`;
+        });
+      });
+    }
     [...this.panels].forEach(panel => {
       if (panel.id === id) {
         panel.removeAttribute('hidden');
