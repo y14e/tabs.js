@@ -89,6 +89,8 @@ class Tabs {
   }
 
   activate(tab) {
+    const element = this.element;
+    element.dataset.tabsTransitioning = '';
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
@@ -100,6 +102,7 @@ class Tabs {
         if (event.propertyName !== 'height') {
           return;
         }
+        delete element.dataset.tabsTransitioning;
         this.style.height = this.style.overflow = '';
         this.removeEventListener('transitionend', handleTransitionEnd);
       });
