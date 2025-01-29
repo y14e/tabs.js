@@ -8,7 +8,7 @@ class Tabs {
       selector: {
         list: '[role="tablist"]',
         tab: '[role="tab"]',
-        content: '[role="tablist"] + :not([role="tabpanel"])',
+        content: '[role="tablist"] + *',
         panel: '[role="tabpanel"]',
         ...options?.selector,
       },
