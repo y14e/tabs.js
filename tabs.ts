@@ -7,6 +7,10 @@ type TabsOptions = {
     content?: string;
     panel?: string;
   };
+  animation?: {
+    duration?: number;
+    easing?: string;
+  };
 };
 
 class Tabs {
@@ -29,6 +33,11 @@ class Tabs {
         content: '[role="tablist"] + :not([role="tabpanel"])',
         panel: '[role="tabpanel"]',
         ...options?.selector,
+      },
+      animation: {
+        duration: 300,
+        easing: 'ease',
+        ...options?.animation,
       },
     };
     const NOT_NESTED = `:not(:scope ${this.options.selector.panel} *)`;
@@ -119,22 +128,10 @@ class Tabs {
       tab.tabIndex = isSelected ? 0 : -1;
     });
     if (this.content) {
-      this.content.addEventListener('transitionend', function handleTransitionEnd(event) {
-        if (event.propertyName !== 'height') {
-          return;
-        }
+      this.content.style.overflow = 'clip';
+      this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
         delete element.dataset.tabsTransitioning;
-        this.style.height = this.style.overflow = '';
-        this.removeEventListener('transitionend', handleTransitionEnd);
-      });
-      this.content.style.cssText += `
-        height: ${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px;
-        overflow: clip;
-      `;
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this.content.style.height = `${document.getElementById(id!)!.scrollHeight}px`;
-        });
+        this.content.style.height = this.content.style.overflow = '';
       });
     }
     [...this.panels].forEach(panel => {
