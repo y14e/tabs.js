@@ -57,14 +57,12 @@ class Tabs {
         this.handleKeyDown(event);
       });
     });
-    const generateId = () => {
-      return Math.random().toString(36).slice(-8);
-    };
     this.tabs.forEach((tab, i) => {
+      const id = Math.random().toString(36).slice(-8);
       if (i < this.panels.length) {
-        tab.id ||= `tab-${generateId()}`;
+        tab.id ||= `tab-${id}`;
       }
-      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${generateId()}`));
+      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
       tab.addEventListener('click', event => {
         this.handleClick(event);
