@@ -109,13 +109,23 @@ class Tabs {
       tab.setAttribute('aria-selected', String(isSelected));
       tab.tabIndex = isSelected ? 0 : -1;
     });
-    if (this.content) {
-      this.content.style.overflow = 'clip';
-      this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
-        delete element.dataset.tabsAnimating;
-        this.content.style.height = this.content.style.overflow = '';
+    this.content.style.cssText += `
+      overflow: clip;
+      position: relative;
+    `;
+    [...this.panels].forEach(panel => {
+      panel.style.cssText += `
+        content-visibility: visible;
+        position: absolute;
+      `;
+    });
+    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
+      delete element.dataset.tabsAnimating;
+      this.content.style.height = this.content.style.overflow = this.content.style.position = '';
+      [...this.panels].forEach(panel => {
+        panel.style.contentVisibility = panel.style.position = '';
       });
-    }
+    });
     [...this.panels].forEach(panel => {
       if (panel.id === id) {
         panel.removeAttribute('hidden');
