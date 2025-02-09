@@ -50,40 +50,26 @@ class Tabs {
 
   private initialize() {
     this.lists.forEach((list, i) => {
-      if (this.options.avoidDuplicates && i > 0) {
-        list.ariaHidden = 'true';
-      }
-      list.addEventListener('keydown', event => {
-        this.handleKeyDown(event);
-      });
+      if (this.options.avoidDuplicates && i > 0) list.ariaHidden = 'true';
+      list.addEventListener('keydown', event => this.handleKeyDown(event));
     });
     this.tabs.forEach((tab, i) => {
       const id = Math.random().toString(36).slice(-8);
-      if (i < this.panels.length) {
-        tab.id ||= `tab-${id}`;
-      }
+      if (i < this.panels.length) tab.id ||= `tab-${id}`;
       tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id}`));
       tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
-      tab.addEventListener('click', event => {
-        this.handleClick(event);
-      });
+      tab.addEventListener('click', event => this.handleClick(event));
     });
     this.panels.forEach((panel, i) => {
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
-      if (panel.hidden) {
-        panel.tabIndex = 0;
-      }
-      panel.addEventListener('beforematch', event => {
-        this.handleBeforeMatch(event);
-      });
+      if (panel.hidden) panel.tabIndex = 0;
+      panel.addEventListener('beforematch', event => this.handleBeforeMatch(event));
     });
   }
 
   private handleClick(event: MouseEvent) {
     event.preventDefault();
-    if (this.element.hasAttribute('data-tabs-animating')) {
-      return;
-    }
+    if (this.element.hasAttribute('data-tabs-animating')) return;
     this.activate(event.currentTarget as HTMLElement);
   }
 
@@ -93,13 +79,9 @@ class Tabs {
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
     const next = `Arrow${isHorizontal ? 'Right' : 'Down'}`;
     const { key } = event;
-    if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) {
-      return;
-    }
+    if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
-    if (this.element.hasAttribute('data-tabs-animating')) {
-      return;
-    }
+    if (this.element.hasAttribute('data-tabs-animating')) return;
     const active = document.activeElement as HTMLElement;
     if ([' ', 'Enter'].includes(key)) {
       active.click();
@@ -110,9 +92,7 @@ class Tabs {
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1] as HTMLElement;
     tab.focus();
-    if (this.options.autoActivation) {
-      tab.click();
-    }
+    if (this.options.autoActivation) tab.click();
   }
 
   private handleBeforeMatch(event: Event) {
@@ -120,9 +100,7 @@ class Tabs {
   }
 
   activate(tab: HTMLElement) {
-    if (tab.ariaSelected === 'true') {
-      return;
-    }
+    if (tab.ariaSelected === 'true') return;
     const element = this.element;
     element.dataset.tabsAnimating = '';
     const id = tab.getAttribute('aria-controls');
