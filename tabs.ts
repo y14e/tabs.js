@@ -116,6 +116,7 @@ class Tabs {
     [...this.panels].forEach(panel => {
       panel.style.cssText += `
         content-visibility: visible;
+        opacity: ${panel.id === id ? 1 : 0};
         position: absolute;
       `;
     });
