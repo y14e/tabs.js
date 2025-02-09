@@ -81,6 +81,9 @@ class Tabs {
 
   private handleClick(event: MouseEvent) {
     event.preventDefault();
+    if (this.element.hasAttribute('data-tabs-animating')) {
+      return;
+    }
     this.activate(event.currentTarget as HTMLElement);
   }
 
@@ -94,6 +97,9 @@ class Tabs {
       return;
     }
     event.preventDefault();
+    if (this.element.hasAttribute('data-tabs-animating')) {
+      return;
+    }
     const active = document.activeElement as HTMLElement;
     if ([' ', 'Enter'].includes(key)) {
       active.click();

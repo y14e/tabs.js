@@ -59,6 +59,9 @@ class Tabs {
 
   handleClick(event) {
     event.preventDefault();
+    if (this.element.hasAttribute('data-tabs-animating')) {
+      return;
+    }
     this.activate(event.currentTarget);
   }
 
@@ -72,6 +75,9 @@ class Tabs {
       return;
     }
     event.preventDefault();
+    if (this.element.hasAttribute('data-tabs-animating')) {
+      return;
+    }
     const active = document.activeElement;
     if ([' ', 'Enter'].includes(key)) {
       active.click();
@@ -93,7 +99,7 @@ class Tabs {
 
   activate(tab) {
     const element = this.element;
-    element.dataset.tabsTransitioning = '';
+    element.dataset.tabsAnimating = '';
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
@@ -103,7 +109,7 @@ class Tabs {
     if (this.content) {
       this.content.style.overflow = 'clip';
       this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
-        delete element.dataset.tabsTransitioning;
+        delete element.dataset.tabsAnimating;
         this.content.style.height = this.content.style.overflow = '';
       });
     }
