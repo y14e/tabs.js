@@ -13,6 +13,7 @@ class Tabs {
         ...options?.selector,
       },
       animation: {
+        crossFade: true,
         duration: 300,
         easing: 'ease',
         ...options?.animation,
@@ -65,12 +66,11 @@ class Tabs {
       active.click();
       return;
     }
-    const tabs = list.querySelectorAll(`${this.options.selector.tab}:not(:disabled)`);
+    const tabs = list.querySelectorAll(this.options.selector.tab);
     const index = [...tabs].indexOf(active);
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
     tab.focus();
-    if (this.options.autoActivation) tab.click();
   }
 
   handleBeforeMatch(event) {
@@ -91,17 +91,20 @@ class Tabs {
       position: relative;
     `;
     [...this.panels].forEach(panel => {
-      panel.style.cssText += `
-        content-visibility: visible;
-        opacity: ${panel.id === id ? 1 : 0};
-        position: absolute;
-      `;
+      if (panel.id === id || !panel.hidden) {
+        panel.style.cssText += `
+          content-visibility: visible;
+          display: block;
+        `;
+      }
+      panel.style.position = 'absolute';
+      if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
     });
-    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
+    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hidden).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
       delete element.dataset.tabsAnimating;
       this.content.style.height = this.content.style.overflow = this.content.style.position = '';
       [...this.panels].forEach(panel => {
-        panel.style.contentVisibility = panel.style.position = '';
+        panel.style.contentVisibility = panel.style.display = panel.style.position = panel.style.visibility = '';
       });
     });
     [...this.panels].forEach(panel => {
@@ -111,6 +114,9 @@ class Tabs {
       } else {
         panel.setAttribute('hidden', 'until-found');
         panel.removeAttribute('tabindex');
+      }
+      if (this.options.animation.crossFade) {
+        panel.animate({ opacity: [panel.hidden ? 1 : 0, panel.hidden ? 0 : 1] }, { duration: this.options.animation.duration, easing: this.options.animation.easing });
       }
     });
   }
