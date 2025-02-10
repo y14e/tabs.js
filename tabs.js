@@ -79,6 +79,7 @@ class Tabs {
   }
 
   activate(tab) {
+    if (tab.ariaSelected === 'true') return;
     const element = this.element;
     element.dataset.tabsAnimating = '';
     const id = tab.getAttribute('aria-controls');
