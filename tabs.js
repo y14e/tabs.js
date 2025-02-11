@@ -97,7 +97,7 @@ class Tabs {
       if (!panel.hidden || panel.id === id) {
         panel.style.cssText += `
           content-visibility: visible;
-          display: block;
+          display: block; // Fix for WebKit
         `;
       }
       if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
