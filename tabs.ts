@@ -116,13 +116,13 @@ class Tabs {
       position: relative;
     `;
     [...this.panels].forEach(panel => {
-      if (panel.id === id || !panel.hidden) {
+      panel.style.position = 'absolute';
+      if (!panel.hidden || panel.id === id) {
         panel.style.cssText += `
           content-visibility: visible;
           display: block;
         `;
       }
-      panel.style.position = 'absolute';
       if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
     });
     this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
