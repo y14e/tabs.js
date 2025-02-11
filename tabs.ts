@@ -141,7 +141,7 @@ class Tabs {
         panel.removeAttribute('tabindex');
       }
       if (this.options.animation.crossFade) {
-        panel.animate({ opacity: [panel.hidden ? 1 : 0, panel.hidden ? 0 : 1] }, { duration: this.options.animation.duration, easing: this.options.animation.easing });
+        panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: this.options.animation.easing });
       }
     });
   }
