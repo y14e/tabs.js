@@ -90,21 +90,22 @@ class Tabs {
     });
     this.content.style.cssText += `
       overflow: clip;
-      position: relative;
+      position: relative; // Fix for WebKit
+      will-change: height;
     `;
     [...this.panels].forEach(panel => {
       panel.style.position = 'absolute';
       if (!panel.hidden || panel.id === id) {
         panel.style.cssText += `
           content-visibility: visible;
-          display: block; // Fix for WebKit
+          display: block;
         `;
       }
       if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
     });
     this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hidden).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
       delete element.dataset.tabsAnimating;
-      this.content.style.height = this.content.style.overflow = this.content.style.position = '';
+      this.content.style.height = this.content.style.overflow = this.content.style.position = this.content.style.willChange = '';
       [...this.panels].forEach(panel => {
         panel.style.contentVisibility = panel.style.display = panel.style.position = panel.style.visibility = '';
       });
@@ -118,7 +119,10 @@ class Tabs {
         panel.removeAttribute('tabindex');
       }
       if (this.options.animation.crossFade) {
-        panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: this.options.animation.easing });
+        panel.style.willChange = 'opacity';
+        panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
+          panel.style.willChange = '';
+        });
       }
     });
   }
