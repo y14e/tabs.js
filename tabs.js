@@ -132,7 +132,7 @@ class Tabs {
       }
       if (this.options.animation.crossFade) {
         panel.style.willChange = 'opacity';
-        panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
+        panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: 'ease' }).addEventListener('finish', () => {
           panel.style.willChange = '';
         });
       }
