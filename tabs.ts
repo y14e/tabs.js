@@ -66,6 +66,12 @@ class Tabs {
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
       if (panel.hidden) panel.tabIndex = 0;
       panel.addEventListener('beforematch', event => this.handleBeforeMatch(event));
+
+      // Fix for WebKit
+      new ResizeObserver(() => {
+        if (panel.hidden) return;
+        (panel.closest(this.options.selector.content!) as HTMLElement).style.height = `${panel.scrollHeight}px`;
+      }).observe(panel);
     });
   }
 
