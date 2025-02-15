@@ -53,7 +53,7 @@ class Tabs {
     this.initialize();
   }
 
-  private initialize() {
+  private initialize(): void {
     this.lists.forEach((list, i) => {
       if (this.options.avoidDuplicates && i > 0) list.ariaHidden = 'true';
       list.addEventListener('keydown', event => this.handleKeyDown(event));
@@ -84,13 +84,13 @@ class Tabs {
     }
   }
 
-  private handleClick(event: MouseEvent) {
+  private handleClick(event: MouseEvent): void {
     event.preventDefault();
     if (this.element.hasAttribute('data-tabs-animating')) return;
     this.activate(event.currentTarget as HTMLElement);
   }
 
-  private handleKeyDown(event: KeyboardEvent) {
+  private handleKeyDown(event: KeyboardEvent): void {
     const list = event.currentTarget as HTMLElement;
     const isHorizontal = list.ariaOrientation !== 'vertical';
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
@@ -112,11 +112,11 @@ class Tabs {
     if (this.options.autoActivation) tab.click();
   }
 
-  private handleBeforeMatch(event: Event) {
+  private handleBeforeMatch(event: Event): void {
     (document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).id}"]`) as HTMLElement).click();
   }
 
-  activate(tab: HTMLElement) {
+  activate(tab: HTMLElement): void {
     if (tab.ariaSelected === 'true') return;
     const element = this.element;
     element.dataset.tabsAnimating = '';
