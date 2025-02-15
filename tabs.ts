@@ -67,7 +67,10 @@ class Tabs {
     });
     this.panels.forEach((panel, i) => {
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
-      if (panel.hidden) panel.tabIndex = 0;
+      if (panel.hidden) {
+        panel.setAttribute('hidden', 'until-found');
+        panel.tabIndex = 0;
+      }
       panel.addEventListener('beforematch', event => this.handleBeforeMatch(event));
     });
 
