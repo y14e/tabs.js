@@ -105,7 +105,7 @@ class Tabs {
     });
     this.content.style.cssText += `
       overflow: clip;
-      position: relative; // Fix for WebKit
+      position: relative;
       will-change: height;
     `;
     [...this.panels].forEach(panel => {
@@ -113,7 +113,7 @@ class Tabs {
       if (!panel.hidden || panel.id === id) {
         panel.style.cssText += `
           content-visibility: visible;
-          display: block;
+          display: block; // Fix for WebKit
         `;
       }
       if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
