@@ -122,7 +122,7 @@ class Tabs {
   activate(tab: HTMLElement): void {
     if (tab.ariaSelected === 'true') return;
     const element = this.element;
-    element.dataset.tabsAnimating = '';
+    element.setAttribute('data-tabs-animating', '');
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
@@ -145,7 +145,7 @@ class Tabs {
       if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
     });
     this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
-      delete element.dataset.tabsAnimating;
+      element.removeAttribute('data-tabs-animating');
       this.content.style.height = this.content.style.overflow = this.content.style.position = this.content.style.willChange = '';
       [...this.panels].forEach(panel => {
         panel.style.contentVisibility = panel.style.display = panel.style.position = panel.style.visibility = '';
