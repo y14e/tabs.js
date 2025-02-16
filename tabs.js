@@ -109,11 +109,8 @@ class Tabs {
     this.content.style.cssText += `
       overflow: clip;
       position: relative;
+      will-change: ${[...new Set(window.getComputedStyle(this.content).getPropertyValue('will-change').split(',')).add('height').values()].filter(value => value !== 'auto').join(',')};
     `;
-    const willChange = new Set(window.getComputedStyle(this.content).willChange.split(','));
-    willChange.delete('auto');
-    willChange.add('height');
-    this.content.style.willChange = [...willChange].join(',');
     [...this.panels].forEach(panel => {
       panel.style.position = 'absolute';
       if (!panel.hidden || panel.id === id) {
@@ -140,10 +137,7 @@ class Tabs {
         panel.removeAttribute('tabindex');
       }
       if (this.options.animation.crossFade) {
-        const willChange = new Set(window.getComputedStyle(panel).willChange.split(','));
-        willChange.delete('auto');
-        willChange.add('opacity');
-        panel.style.willChange = [...willChange].join(',');
+        panel.style.willChange = [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(',');
         panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: 'ease' }).addEventListener('finish', () => {
           panel.style.willChange = '';
         });
