@@ -134,6 +134,7 @@ class Tabs {
       position: relative;
     `;
     const willChange = new Set(window.getComputedStyle(this.content).willChange.split(','));
+    willChange.delete('auto');
     willChange.add('height');
     this.content.style.willChange = [...willChange].join(',');
     [...this.panels].forEach(panel => {
@@ -163,6 +164,7 @@ class Tabs {
       }
       if (this.options.animation.crossFade) {
         const willChange = new Set(window.getComputedStyle(panel).willChange.split(','));
+        willChange.delete('auto');
         willChange.add('opacity');
         panel.style.willChange = [...willChange].join(',');
         panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: 'ease' }).addEventListener('finish', () => {
