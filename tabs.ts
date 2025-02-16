@@ -55,21 +55,25 @@ class Tabs {
 
   private initialize(): void {
     this.lists.forEach((list, i) => {
-      if (this.options.avoidDuplicates && i > 0) list.ariaHidden = 'true';
+      if (this.options.avoidDuplicates && i > 0) list.setAttribute('aria-hidden', 'true');
       list.addEventListener('keydown', event => this.handleKeyDown(event));
     });
     this.tabs.forEach((tab, i) => {
       const id = Math.random().toString(36).slice(-8);
-      if (i < this.panels.length) tab.id ||= `tab-${id}`;
-      tab.setAttribute('aria-controls', (this.panels[i % this.panels.length].id ||= `tab-panel-${id}`));
-      tab.tabIndex = tab.ariaSelected === 'true' ? 0 : -1;
+      if (i < this.panels.length) {
+        tab.setAttribute('id', tab.getAttribute('id') || `tab-${id}`);
+        const panel = this.panels[i];
+        panel.setAttribute('id', panel.getAttribute('id') || `tab-panel-${id}`);
+      }
+      tab.setAttribute('aria-controls', this.panels[i % this.panels.length].getAttribute('id')!);
+      tab.setAttribute('tabindex', tab.getAttribute('aria-selected') === 'true' ? '0' : '-1');
       tab.addEventListener('click', event => this.handleClick(event));
     });
     this.panels.forEach((panel, i) => {
-      panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].id}`.trim());
-      if (panel.hidden) {
+      panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].getAttribute('id')}`.trim());
+      if (panel.hasAttribute('hidden')) {
         panel.setAttribute('hidden', 'until-found');
-        panel.tabIndex = 0;
+        panel.setAttribute('tabindex', '0');
       }
       panel.addEventListener('beforematch', event => this.handleBeforeMatch(event));
     });
@@ -78,9 +82,9 @@ class Tabs {
     if (!['auto', '0px'].includes(window.getComputedStyle(this.content).minHeight)) {
       this.panels.forEach(panel => {
         new ResizeObserver(() => {
-          if (panel.hidden) return;
+          if (panel.hasAttribute('hidden')) return;
           window.requestAnimationFrame(() => {
-            (panel.closest(this.options.selector.content!) as HTMLElement).style.height = `${panel.scrollHeight}px`;
+            (panel.closest(this.options.selector.content!) as HTMLElement).style.setProperty('height', `${panel.scrollHeight}px`);
           });
         }).observe(panel);
       });
@@ -95,7 +99,7 @@ class Tabs {
 
   private handleKeyDown(event: KeyboardEvent): void {
     const list = event.currentTarget as HTMLElement;
-    const isHorizontal = list.ariaOrientation !== 'vertical';
+    const isHorizontal = list.getAttribute('aria-orientation') !== 'vertical';
     const previous = `Arrow${isHorizontal ? 'Left' : 'Up'}`;
     const next = `Arrow${isHorizontal ? 'Right' : 'Down'}`;
     const { key } = event;
@@ -116,53 +120,47 @@ class Tabs {
   }
 
   private handleBeforeMatch(event: Event): void {
-    (document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).id}"]`) as HTMLElement).click();
+    (document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).getAttribute('id')}"]`) as HTMLElement).click();
   }
 
   activate(tab: HTMLElement): void {
-    if (tab.ariaSelected === 'true') return;
+    if (tab.getAttribute('aria-selected') === 'true') return;
     const element = this.element;
     element.setAttribute('data-tabs-animating', '');
     const id = tab.getAttribute('aria-controls');
     [...this.tabs].forEach(tab => {
       const isSelected = tab.getAttribute('aria-controls') === id;
       tab.setAttribute('aria-selected', String(isSelected));
-      tab.tabIndex = isSelected ? 0 : -1;
+      tab.setAttribute('tabindex', isSelected ? '0' : '-1');
     });
-    this.content.style.cssText += `
-      overflow: clip;
-      position: relative;
-      will-change: ${[...new Set(window.getComputedStyle(this.content).getPropertyValue('will-change').split(',')).add('height').values()].filter(value => value !== 'auto').join(',')};
-    `;
+    this.content.style.setProperty('overflow', 'clip');
+    this.content.style.setProperty('position', 'relative');
+    this.content.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.content).getPropertyValue('will-change').split(',')).add('height').values()].filter(value => value !== 'auto').join(','));
     [...this.panels].forEach(panel => {
-      panel.style.position = 'absolute';
-      if (!panel.hidden || panel.id === id) {
-        panel.style.cssText += `
-          content-visibility: visible;
-          display: block; // Fix for WebKit
-        `;
+      panel.style.setProperty('position', 'absolute');
+      if (!panel.hasAttribute('hidden') || panel.getAttribute('id') === id) {
+        panel.style.setProperty('content-visibility', 'visible');
+        panel.style.setProperty('display', 'block'); // Fix for WebKit
       }
-      if (!this.options.animation.crossFade && panel.id !== id) panel.style.visibility = 'hidden';
+      if (!this.options.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
     this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
       element.removeAttribute('data-tabs-animating');
-      this.content.style.height = this.content.style.overflow = this.content.style.position = this.content.style.willChange = '';
-      [...this.panels].forEach(panel => {
-        panel.style.contentVisibility = panel.style.display = panel.style.position = panel.style.visibility = '';
-      });
+      ['height', 'overflow', 'position', 'will-change'].forEach(property => this.content.style.removeProperty(property));
+      [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(property => panel.style.removeProperty(property)));
     });
     [...this.panels].forEach(panel => {
-      if (panel.id === id) {
+      if (panel.getAttribute('id') === id) {
         panel.removeAttribute('hidden');
-        panel.tabIndex = 0;
+        panel.setAttribute('tabindex', '0');
       } else {
         panel.setAttribute('hidden', 'until-found');
         panel.removeAttribute('tabindex');
       }
       if (this.options.animation.crossFade) {
-        panel.style.willChange = [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(',');
-        panel.animate({ opacity: panel.hidden ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: 'ease' }).addEventListener('finish', () => {
-          panel.style.willChange = '';
+        panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
+        panel.animate({ opacity: panel.hasAttribute('hidden') ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration }).addEventListener('finish', () => {
+          panel.style.removeProperty('will-change');
         });
       }
     });

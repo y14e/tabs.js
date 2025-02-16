@@ -136,7 +136,7 @@ class Tabs {
       }
       if (this.options.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
-        panel.animate({ opacity: panel.hasAttribute('hidden') ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration, easing: 'ease' }).addEventListener('finish', () => {
+        panel.animate({ opacity: panel.hasAttribute('hidden') ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration }).addEventListener('finish', () => {
           panel.style.removeProperty('will-change');
         });
       }
