@@ -1,16 +1,16 @@
 type TabsOptions = {
-  autoActivation?: boolean;
-  avoidDuplicates?: boolean;
-  selector?: {
-    list?: string;
-    tab?: string;
-    content?: string;
-    panel?: string;
+  autoActivation: boolean;
+  avoidDuplicates: boolean;
+  selector: {
+    list: string;
+    tab: string;
+    content: string;
+    panel: string;
   };
-  animation?: {
-    crossFade?: boolean;
-    duration?: number;
-    easing?: string;
+  animation: {
+    crossFade: boolean;
+    duration: number;
+    easing: string;
   };
 };
 
@@ -22,7 +22,7 @@ class Tabs {
   content: HTMLElement;
   panels: NodeListOf<HTMLElement>;
 
-  constructor(element: HTMLElement, options?: TabsOptions) {
+  constructor(element: HTMLElement, options?: Partial<TabsOptions>) {
     this.element = element;
     this.options = {
       autoActivation: true,
