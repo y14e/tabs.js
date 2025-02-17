@@ -123,8 +123,8 @@ class Tabs {
     });
     this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
       element.removeAttribute('data-tabs-animating');
-      ['height', 'overflow', 'position', 'will-change'].forEach(property => this.content.style.removeProperty(property));
-      [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(property => panel.style.removeProperty(property)));
+      ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
+      [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
     });
     [...this.panels].forEach(panel => {
       if (panel.getAttribute('id') === id) {
