@@ -1,36 +1,36 @@
 class Tabs {
-  constructor(element, options) {
+  constructor(element, props) {
     this.element = element;
-    this.options = {
+    this.props = {
       autoActivation: true,
       avoidDuplicates: false,
-      ...options,
+      ...props,
       selector: {
         list: '[role="tablist"]',
         tab: '[role="tab"]',
         content: '[role="tablist"] + :not([role="tabpanel"])',
         panel: '[role="tabpanel"]',
-        ...options?.selector,
+        ...props?.selector,
       },
       animation: {
         crossFade: true,
         duration: 300,
         easing: 'ease',
-        ...options?.animation,
+        ...props?.animation,
       },
     };
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.options.animation.duration = 0;
-    const NOT_NESTED = `:not(:scope ${this.options.selector.panel} *)`;
-    this.lists = this.element.querySelectorAll(`${this.options.selector.list}${NOT_NESTED}`);
-    this.tabs = this.element.querySelectorAll(`${this.options.selector.tab}${NOT_NESTED}`);
-    this.content = this.element.querySelector(`${this.options.selector.content}${NOT_NESTED}`);
-    this.panels = this.element.querySelectorAll(`${this.options.selector.panel}${NOT_NESTED}`);
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.props.animation.duration = 0;
+    const NOT_NESTED = `:not(:scope ${this.props.selector.panel} *)`;
+    this.lists = this.element.querySelectorAll(`${this.props.selector.list}${NOT_NESTED}`);
+    this.tabs = this.element.querySelectorAll(`${this.props.selector.tab}${NOT_NESTED}`);
+    this.content = this.element.querySelector(`${this.props.selector.content}${NOT_NESTED}`);
+    this.panels = this.element.querySelectorAll(`${this.props.selector.panel}${NOT_NESTED}`);
     this.initialize();
   }
 
   initialize() {
     this.lists.forEach((list, i) => {
-      if (this.options.avoidDuplicates && i > 0) list.setAttribute('aria-hidden', 'true');
+      if (this.props.avoidDuplicates && i > 0) list.setAttribute('aria-hidden', 'true');
       list.addEventListener('keydown', event => this.handleKeyDown(event));
     });
     this.tabs.forEach((tab, i) => {
@@ -59,7 +59,7 @@ class Tabs {
         new ResizeObserver(() => {
           if (panel.hasAttribute('hidden')) return;
           window.requestAnimationFrame(() => {
-            panel.closest(this.options.selector.content).style.setProperty('height', `${panel.scrollHeight}px`);
+            panel.closest(this.props.selector.content).style.setProperty('height', `${panel.scrollHeight}px`);
           });
         }).observe(panel);
       });
@@ -86,12 +86,12 @@ class Tabs {
       active.click();
       return;
     }
-    const tabs = list.querySelectorAll(`${this.options.selector.tab}:not(:disabled)`);
+    const tabs = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
     const index = [...tabs].indexOf(active);
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
     tab.focus();
-    if (this.options.autoActivation) tab.click();
+    if (this.props.autoActivation) tab.click();
   }
 
   handleBeforeMatch(event) {
@@ -117,9 +117,9 @@ class Tabs {
         panel.style.setProperty('content-visibility', 'visible');
         panel.style.setProperty('display', 'block'); // Fix for WebKit
       }
-      if (!this.options.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
+      if (!this.props.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
-    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.options.animation.duration, easing: this.options.animation.easing }).addEventListener('finish', () => {
+    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.props.animation.duration, easing: this.props.animation.easing }).addEventListener('finish', () => {
       element.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
@@ -132,9 +132,9 @@ class Tabs {
         panel.setAttribute('hidden', 'until-found');
         panel.removeAttribute('tabindex');
       }
-      if (this.options.animation.crossFade) {
+      if (this.props.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
-        panel.animate({ opacity: panel.hasAttribute('hidden') ? [1, 0] : [0, 1] }, { duration: this.options.animation.duration }).addEventListener('finish', () => {
+        panel.animate({ opacity: panel.hasAttribute('hidden') ? [1, 0] : [0, 1] }, { duration: this.props.animation.duration }).addEventListener('finish', () => {
           panel.style.removeProperty('will-change');
         });
       }
