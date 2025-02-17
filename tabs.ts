@@ -82,7 +82,7 @@ class Tabs {
         new ResizeObserver(() => {
           if (panel.hasAttribute('hidden')) return;
           window.requestAnimationFrame(() => {
-            (panel.closest(this.props.selector.content!) as HTMLElement).style.setProperty('height', `${panel.scrollHeight}px`);
+            (panel.closest(this.props.selector.content) as HTMLElement).style.setProperty('height', `${panel.scrollHeight}px`);
           });
         }).observe(panel);
       });
@@ -109,7 +109,7 @@ class Tabs {
       active.click();
       return;
     }
-    const tabs = list.querySelectorAll(`${this.props.selector.tab!}:not(:disabled)`);
+    const tabs = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
     const index = [...tabs].indexOf(active);
     const length = tabs.length;
     const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1] as HTMLElement;
