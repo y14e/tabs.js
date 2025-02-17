@@ -42,9 +42,7 @@ class Tabs {
         ...options?.animation,
       },
     };
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      this.options.animation.duration = 0;
-    }
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.options.animation.duration = 0;
     const NOT_NESTED = `:not(:scope ${this.options.selector.panel} *)`;
     this.lists = this.element.querySelectorAll(`${this.options.selector.list}${NOT_NESTED}`);
     this.tabs = this.element.querySelectorAll(`${this.options.selector.tab}${NOT_NESTED}`);
