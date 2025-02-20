@@ -25,6 +25,7 @@ class Tabs {
     this.tabs = this.element.querySelectorAll(`${this.props.selector.tab}${NOT_NESTED}`);
     this.content = this.element.querySelector(`${this.props.selector.content}${NOT_NESTED}`);
     this.panels = this.element.querySelectorAll(`${this.props.selector.panel}${NOT_NESTED}`);
+    if (!this.lists.length || !this.tabs.length || !this.content || !this.panels.length) return;
     this.initialize();
   }
 
@@ -82,14 +83,29 @@ class Tabs {
     event.preventDefault();
     if (this.element.hasAttribute('data-tabs-animating')) return;
     const active = document.activeElement;
-    if ([' ', 'Enter'].includes(key)) {
-      active.click();
-      return;
-    }
     const tabs = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
-    const index = [...tabs].indexOf(active);
+    const position = [...tabs].indexOf(active);
     const length = tabs.length;
-    const tab = tabs[key === previous ? (index - 1 < 0 ? length - 1 : index - 1) : key === next ? (index + 1) % length : key === 'Home' ? 0 : length - 1];
+    let index = position;
+    switch (key) {
+      case ' ':
+      case 'Enter':
+        active.click();
+        return;
+      case previous:
+        index = (position - 1 + length) % length;
+        break;
+      case next:
+        index = (position + 1) % length;
+        break;
+      case 'Home':
+        index = 0;
+        break;
+      case 'End':
+        index = length - 1;
+        break;
+    }
+    const tab = tabs[index];
     tab.focus();
     if (this.props.autoActivation) tab.click();
   }
@@ -115,7 +131,9 @@ class Tabs {
       panel.style.setProperty('position', 'absolute');
       if (!panel.hasAttribute('hidden') || panel.getAttribute('id') === id) {
         panel.style.setProperty('content-visibility', 'visible');
-        panel.style.setProperty('display', 'block'); // Fix for WebKit
+
+        // Fix for WebKit
+        panel.style.setProperty('display', 'block');
       }
       if (!this.props.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
