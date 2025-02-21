@@ -82,9 +82,7 @@ class Tabs {
       this.panels.forEach(panel => {
         new ResizeObserver(() => {
           if (panel.hasAttribute('hidden')) return;
-          window.requestAnimationFrame(() => {
-            (panel.closest(this.props.selector.content) as HTMLElement).style.setProperty('height', `${panel.scrollHeight}px`);
-          });
+          window.requestAnimationFrame(() => (panel.closest(this.props.selector.content) as HTMLElement).style.setProperty('height', `${panel.scrollHeight}px`));
         }).observe(panel);
       });
     }
