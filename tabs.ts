@@ -86,6 +86,8 @@ class Tabs {
         }).observe(panel);
       });
     }
+
+    this.element.setAttribute('data-tabs-initialized', '');
   }
 
   private handleClick(event: MouseEvent): void {
