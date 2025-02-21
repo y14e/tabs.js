@@ -105,8 +105,8 @@ class Tabs {
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
     if (this.element.hasAttribute('data-tabs-animating')) return;
-    const active = document.activeElement as HTMLElement;
     const tabs = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
+    const active = document.activeElement as HTMLElement;
     const position = [...tabs].indexOf(active);
     const length = tabs.length;
     let index = position;
