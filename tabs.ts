@@ -211,19 +211,23 @@ class TabsIndicator {
   }
 
   initialize() {
-    new ResizeObserver(() => this.update()).observe(this.list);
+    new ResizeObserver(() => {
+      if (!this.element.hasAttribute('data-animating')) this.update();
+    }).observe(this.list);
     new MutationObserver(() => this.update(this.props.animation.indicatorDuration)).observe(this.list, { attributes: true, attributeFilter: ['aria-selected'], subtree: true });
   }
 
   update(duration = 0) {
     if (!this.list.checkVisibility()) return;
+    this.element.setAttribute('data-animating', '');
     const isHorizontal = this.list.getAttribute('aria-orientation') !== 'vertical';
     const rect = this.list.querySelector('[aria-selected="true"]')!.getBoundingClientRect();
     const position = isHorizontal ? 'left' : 'top';
     const size = isHorizontal ? 'width' : 'height';
     this.element.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.element).getPropertyValue('will-change').split(',')).add(position).add(size).values()].filter(value => value !== 'auto').join(','));
-    this.element.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: duration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.element.style.removeProperty('will-change'));
+    this.element.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: duration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => {
+      this.element.removeAttribute('data-animating');
+      this.element.style.removeProperty('will-change');
+    });
   }
 }
-
-export default Tabs;
