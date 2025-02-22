@@ -181,7 +181,7 @@ class TabsIndicator {
 
   initialize() {
     new ResizeObserver(() => this.update()).observe(this.list);
-    new MutationObserver(() => this.update()).observe(this.list, { attributes: true, attributeFilter: ['aria-selected'], subtree: true });
+    new MutationObserver(() => this.update()).observe(this.list, { attributeFilter: ['aria-selected'], subtree: true });
   }
 
   update() {
