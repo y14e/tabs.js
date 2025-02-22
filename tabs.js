@@ -8,6 +8,7 @@ class Tabs {
       selector: {
         list: '[role="tablist"]',
         tab: '[role="tab"]',
+        indicator: '[data-tabs-indicator]',
         content: '[role="tablist"] + *',
         panel: '[role="tabpanel"]',
         ...props?.selector,
@@ -16,13 +17,16 @@ class Tabs {
         crossFade: true,
         duration: 300,
         easing: 'ease',
+        indicatorDuration: 300,
+        indicatorEasing: 'ease',
         ...props?.animation,
       },
     };
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.props.animation.duration = 0;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.props.animation.duration = this.props.animation.indicatorDuration = 0;
     const NOT_NESTED = `:not(:scope ${this.props.selector.panel} *)`;
     this.lists = this.element.querySelectorAll(`${this.props.selector.list}${NOT_NESTED}`);
     this.tabs = this.element.querySelectorAll(`${this.props.selector.tab}${NOT_NESTED}`);
+    this.indicators = this.element.querySelectorAll(`${this.props.selector.indicator}${NOT_NESTED}`);
     this.content = this.element.querySelector(`${this.props.selector.content}${NOT_NESTED}`);
     this.panels = this.element.querySelectorAll(`${this.props.selector.panel}${NOT_NESTED}`);
     if (!this.lists.length || !this.tabs.length || !this.content || !this.panels.length) return;
@@ -45,6 +49,15 @@ class Tabs {
       tab.setAttribute('tabindex', tab.getAttribute('aria-selected') === 'true' ? '0' : '-1');
       tab.addEventListener('click', event => this.handleClick(event));
     });
+    if (this.indicators.length) {
+      this.indicators.forEach(indicator => {
+        const list = indicator.closest(this.props.selector.list);
+        list.style.setProperty('position', 'relative');
+        indicator.style.setProperty('display', 'block');
+        indicator.style.setProperty('position', 'absolute');
+        new TabsIndicator(indicator, list, this.props);
+      });
+    }
     this.panels.forEach((panel, i) => {
       panel.setAttribute('aria-labelledby', `${panel.getAttribute('aria-labelledby') || ''} ${this.tabs[i].getAttribute('id')}`.trim());
       if (panel.hasAttribute('hidden')) {
@@ -155,6 +168,30 @@ class Tabs {
         panel.animate({ opacity: panel.hasAttribute('hidden') ? [1, 0] : [0, 1] }, { duration: this.props.animation.duration, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
       }
     });
+  }
+}
+
+class TabsIndicator {
+  constructor(element, list, props) {
+    this.element = element;
+    this.list = list;
+    this.props = props;
+    this.initialize();
+  }
+
+  initialize() {
+    new ResizeObserver(() => this.update()).observe(this.list);
+    new MutationObserver(() => this.update()).observe(this.list, { attributes: true, attributeFilter: ['aria-selected'], subtree: true });
+  }
+
+  update() {
+    if (!this.list.checkVisibility()) return;
+    const isHorizontal = this.list.getAttribute('aria-orientation') !== 'vertical';
+    const rect = this.list.querySelector('[aria-selected="true"]').getBoundingClientRect();
+    const position = isHorizontal ? 'left' : 'top';
+    const size = isHorizontal ? 'width' : 'height';
+    this.element.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.element).getPropertyValue('will-change').split(',')).add(position).add(size).values()].filter(value => value !== 'auto').join(','));
+    this.element.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.props.animation.indicatorDuration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.element.style.removeProperty('will-change'));
   }
 }
 
