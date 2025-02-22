@@ -217,15 +217,11 @@ class TabsIndicator {
 
   update() {
     if (!this.list.checkVisibility()) return;
-    this.element.setAttribute('data-animating', '');
     const isHorizontal = this.list.getAttribute('aria-orientation') !== 'vertical';
     const rect = this.list.querySelector('[aria-selected="true"]')!.getBoundingClientRect();
     const position = isHorizontal ? 'left' : 'top';
     const size = isHorizontal ? 'width' : 'height';
     this.element.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.element).getPropertyValue('will-change').split(',')).add(position).add(size).values()].filter(value => value !== 'auto').join(','));
-    this.element.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.props.animation.indicatorDuration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => {
-      this.element.removeAttribute('data-animating');
-      this.element.style.removeProperty('will-change');
-    });
+    this.element.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.props.animation.indicatorDuration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.element.style.removeProperty('will-change'));
   }
 }
