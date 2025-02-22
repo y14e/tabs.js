@@ -95,30 +95,30 @@ class Tabs {
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
     if (this.element.hasAttribute('data-tabs-animating')) return;
-    const tabs = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
+    const focusables = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
     const active = document.activeElement;
-    const position = [...tabs].indexOf(active);
-    const length = tabs.length;
-    let index = position;
+    const activeIndex = [...focusables].indexOf(active);
+    const length = focusables.length;
+    let newIndex = activeIndex;
     switch (key) {
       case ' ':
       case 'Enter':
         active.click();
         return;
       case previous:
-        index = (position - 1 + length) % length;
+        newIndex = (activeIndex - 1 + length) % length;
         break;
       case next:
-        index = (position + 1) % length;
+        newIndex = (activeIndex + 1) % length;
         break;
       case 'Home':
-        index = 0;
+        newIndex = 0;
         break;
       case 'End':
-        index = length - 1;
+        newIndex = length - 1;
         break;
     }
-    const tab = tabs[index];
+    const tab = focusables[newIndex];
     tab.focus();
     if (this.props.autoActivation) tab.click();
   }
