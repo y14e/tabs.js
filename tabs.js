@@ -97,19 +97,19 @@ class Tabs {
     if (this.root.hasAttribute('data-tabs-animating')) return;
     const focusables = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
     const active = document.activeElement;
-    const activeIndex = [...focusables].indexOf(active);
+    const currentIndex = [...focusables].indexOf(active);
     const length = focusables.length;
-    let newIndex = activeIndex;
+    let newIndex = currentIndex;
     switch (key) {
       case ' ':
       case 'Enter':
         active.click();
         return;
       case previous:
-        newIndex = (activeIndex - 1 + length) % length;
+        newIndex = (currentIndex - 1 + length) % length;
         break;
       case next:
-        newIndex = (activeIndex + 1) % length;
+        newIndex = (currentIndex + 1) % length;
         break;
       case 'Home':
         newIndex = 0;
