@@ -216,12 +216,11 @@ class TabsIndicator {
   }
 
   update() {
-    if (!this.list.checkVisibility()) return;
     const isHorizontal = this.list.getAttribute('aria-orientation') !== 'vertical';
-    const rect = this.list.querySelector('[aria-selected="true"]')!.getBoundingClientRect();
     const position = isHorizontal ? 'left' : 'top';
     const size = isHorizontal ? 'width' : 'height';
     this.indicator.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.indicator).getPropertyValue('will-change').split(',')).add(position).add(size).values()].filter(value => value !== 'auto').join(','));
+    const rect = this.list.querySelector('[aria-selected="true"]')!.getBoundingClientRect();
     this.indicator.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.props.animation.indicatorDuration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.indicator.style.removeProperty('will-change'));
   }
 }
