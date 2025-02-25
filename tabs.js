@@ -1,17 +1,15 @@
 class Tabs {
-  constructor(root, props) {
+  constructor(root, options) {
     this.root = root;
-    this.props = {
+    this.defaults = {
       autoActivation: true,
       avoidDuplicates: false,
-      ...props,
       selector: {
         list: '[role="tablist"]',
         tab: '[role="tab"]',
         indicator: '[data-tabs-indicator]',
         content: '[role="tablist"] + *',
         panel: '[role="tabpanel"]',
-        ...props?.selector,
       },
       animation: {
         crossFade: true,
@@ -19,23 +17,28 @@ class Tabs {
         easing: 'ease',
         indicatorDuration: 300,
         indicatorEasing: 'ease',
-        ...props?.animation,
       },
     };
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.props.animation.duration = this.props.animation.indicatorDuration = 0;
-    const NOT_NESTED = `:not(:scope ${this.props.selector.panel} *)`;
-    this.lists = this.root.querySelectorAll(`${this.props.selector.list}${NOT_NESTED}`);
-    this.tabs = this.root.querySelectorAll(`${this.props.selector.tab}${NOT_NESTED}`);
-    this.indicators = this.root.querySelectorAll(`${this.props.selector.indicator}${NOT_NESTED}`);
-    this.content = this.root.querySelector(`${this.props.selector.content}${NOT_NESTED}`);
-    this.panels = this.root.querySelectorAll(`${this.props.selector.panel}${NOT_NESTED}`);
+    this.settings = {
+      ...this.defaults,
+      ...options,
+      selector: { ...this.defaults.selector, ...options?.selector },
+      animation: { ...this.defaults.animation, ...options?.animation },
+    };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) this.settings.animation.duration = this.settings.animation.indicatorDuration = 0;
+    const NOT_NESTED = `:not(:scope ${this.settings.selector.panel} *)`;
+    this.lists = this.root.querySelectorAll(`${this.settings.selector.list}${NOT_NESTED}`);
+    this.tabs = this.root.querySelectorAll(`${this.settings.selector.tab}${NOT_NESTED}`);
+    this.indicators = this.root.querySelectorAll(`${this.settings.selector.indicator}${NOT_NESTED}`);
+    this.content = this.root.querySelector(`${this.settings.selector.content}${NOT_NESTED}`);
+    this.panels = this.root.querySelectorAll(`${this.settings.selector.panel}${NOT_NESTED}`);
     if (!this.lists.length || !this.tabs.length || !this.content || !this.panels.length) return;
     this.initialize();
   }
 
   initialize() {
     this.lists.forEach((list, i) => {
-      if (this.props.avoidDuplicates && i > 0) list.setAttribute('aria-hidden', 'true');
+      if (this.settings.avoidDuplicates && i > 0) list.setAttribute('aria-hidden', 'true');
       list.addEventListener('keydown', event => this.handleKeyDown(event));
     });
     this.tabs.forEach((tab, i) => {
@@ -51,11 +54,11 @@ class Tabs {
     });
     if (this.indicators.length) {
       this.indicators.forEach(indicator => {
-        const list = indicator.closest(this.props.selector.list);
+        const list = indicator.closest(this.settings.selector.list);
         list.style.setProperty('position', 'relative');
         indicator.style.setProperty('display', 'block');
         indicator.style.setProperty('position', 'absolute');
-        new TabsIndicator(indicator, list, this.props);
+        new TabsIndicator(indicator, list, this.settings);
       });
     }
     this.panels.forEach((panel, i) => {
@@ -72,7 +75,7 @@ class Tabs {
       this.panels.forEach(panel => {
         new ResizeObserver(() => {
           if (panel.hasAttribute('hidden')) return;
-          window.requestAnimationFrame(() => panel.closest(this.props.selector.content).style.setProperty('height', `${panel.scrollHeight}px`));
+          window.requestAnimationFrame(() => panel.closest(this.settings.selector.content).style.setProperty('height', `${panel.scrollHeight}px`));
         }).observe(panel);
       });
     }
@@ -95,7 +98,7 @@ class Tabs {
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
     if (this.root.hasAttribute('data-tabs-animating')) return;
-    const focusables = list.querySelectorAll(`${this.props.selector.tab}:not(:disabled)`);
+    const focusables = list.querySelectorAll(`${this.settings.selector.tab}:not(:disabled)`);
     const active = document.activeElement;
     const currentIndex = [...focusables].indexOf(active);
     const length = focusables.length;
@@ -120,7 +123,7 @@ class Tabs {
     }
     const tab = focusables[newIndex];
     tab.focus();
-    if (this.props.autoActivation) tab.click();
+    if (this.settings.autoActivation) tab.click();
   }
 
   handleBeforeMatch(event) {
@@ -148,9 +151,9 @@ class Tabs {
         // Fix for WebKit
         panel.style.setProperty('display', 'block');
       }
-      if (!this.props.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
+      if (!this.settings.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
-    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.props.animation.duration, easing: this.props.animation.easing }).addEventListener('finish', () => {
+    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.settings.animation.duration, easing: this.settings.animation.easing }).addEventListener('finish', () => {
       root.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
@@ -163,9 +166,9 @@ class Tabs {
         panel.setAttribute('hidden', 'until-found');
         panel.removeAttribute('tabindex');
       }
-      if (this.props.animation.crossFade) {
+      if (this.settings.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
-        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: this.props.animation.duration, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
+        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: this.settings.animation.duration, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
       }
     });
   }
