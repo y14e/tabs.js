@@ -155,10 +155,10 @@ class Tabs {
   }
 
   private handleBeforeMatch(event: Event): void {
-    (document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).getAttribute('id')}"]`) as HTMLElement).click();
+    this.activate(document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).getAttribute('id')}"]`) as HTMLElement, true);
   }
 
-  activate(tab: HTMLElement): void {
+  activate(tab: HTMLElement, isMatch = false): void {
     if (tab.getAttribute('aria-selected') === 'true') return;
     const root = this.root;
     root.setAttribute('data-tabs-animating', '');
@@ -181,7 +181,7 @@ class Tabs {
       }
       if (!this.settings.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
-    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: this.settings.animation.duration, easing: this.settings.animation.easing }).addEventListener('finish', () => {
+    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden'))!.scrollHeight}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing }).addEventListener('finish', () => {
       root.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
@@ -196,7 +196,7 @@ class Tabs {
       }
       if (this.settings.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
-        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: this.settings.animation.duration, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
+        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
       }
     });
   }
@@ -205,12 +205,12 @@ class Tabs {
 class TabsIndicator {
   indicator: HTMLElement;
   list: HTMLElement;
-  props: Props;
+  settings: TabsOptions;
 
-  constructor(indicator: HTMLElement, list: HTMLElement, props: Props) {
+  constructor(indicator: HTMLElement, list: HTMLElement, props: TabsOptions) {
     this.indicator = indicator;
     this.list = list;
-    this.props = props;
+    this.settings = props;
     this.initialize();
   }
 
@@ -225,6 +225,6 @@ class TabsIndicator {
     const size = isHorizontal ? 'width' : 'height';
     this.indicator.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.indicator).getPropertyValue('will-change').split(',')).add(position).add(size).values()].filter(value => value !== 'auto').join(','));
     const rect = this.list.querySelector('[aria-selected="true"]')!.getBoundingClientRect();
-    this.indicator.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.props.animation.indicatorDuration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.indicator.style.removeProperty('will-change'));
+    this.indicator.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.settings.animation.indicatorDuration, easing: this.settings.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.indicator.style.removeProperty('will-change'));
   }
 }

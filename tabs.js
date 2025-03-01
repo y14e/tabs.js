@@ -127,10 +127,10 @@ class Tabs {
   }
 
   handleBeforeMatch(event) {
-    document.querySelector(`[aria-controls="${event.currentTarget.getAttribute('id')}"]`).click();
+    this.activate(document.querySelector(`[aria-controls="${event.currentTarget.getAttribute('id')}"]`), true);
   }
 
-  activate(tab) {
+  activate(tab, isMatch = false) {
     if (tab.getAttribute('aria-selected') === 'true') return;
     const root = this.root;
     root.setAttribute('data-tabs-animating', '');
@@ -153,7 +153,7 @@ class Tabs {
       }
       if (!this.settings.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
-    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: this.settings.animation.duration, easing: this.settings.animation.easing }).addEventListener('finish', () => {
+    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing }).addEventListener('finish', () => {
       root.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
@@ -168,7 +168,7 @@ class Tabs {
       }
       if (this.settings.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
-        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: this.settings.animation.duration, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
+        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
       }
     });
   }
