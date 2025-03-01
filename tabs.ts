@@ -207,10 +207,10 @@ class TabsIndicator {
   list: HTMLElement;
   settings: TabsOptions;
 
-  constructor(indicator: HTMLElement, list: HTMLElement, props: TabsOptions) {
+  constructor(indicator: HTMLElement, list: HTMLElement, settings: TabsOptions) {
     this.indicator = indicator;
     this.list = list;
-    this.settings = props;
+    this.settings = settings;
     this.initialize();
   }
 
