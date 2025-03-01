@@ -184,10 +184,10 @@ class Tabs {
 }
 
 class TabsIndicator {
-  constructor(indicator, list, props) {
+  constructor(indicator, list, settings) {
     this.indicator = indicator;
     this.list = list;
-    this.props = props;
+    this.settings = settings;
     this.initialize();
   }
 
@@ -203,7 +203,7 @@ class TabsIndicator {
     const size = isHorizontal ? 'width' : 'height';
     this.indicator.style.setProperty('will-change', [...new Set(window.getComputedStyle(this.indicator).getPropertyValue('will-change').split(',')).add(position).add(size).values()].filter(value => value !== 'auto').join(','));
     const rect = this.list.querySelector('[aria-selected="true"]').getBoundingClientRect();
-    this.indicator.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.props.animation.indicatorDuration, easing: this.props.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.indicator.style.removeProperty('will-change'));
+    this.indicator.animate({ [position]: `${rect[position] - this.list.getBoundingClientRect()[position]}px`, [size]: `${rect[size]}px` }, { duration: this.settings.animation.indicatorDuration, easing: this.settings.animation.indicatorEasing, fill: 'forwards' }).addEventListener('finish', () => this.indicator.style.removeProperty('will-change'));
   }
 }
 
