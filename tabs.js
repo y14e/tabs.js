@@ -85,7 +85,6 @@ class Tabs {
 
   handleClick(event) {
     event.preventDefault();
-    if (this.root.hasAttribute('data-tabs-animating')) return;
     this.activate(event.currentTarget);
   }
 
@@ -97,7 +96,6 @@ class Tabs {
     const { key } = event;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
-    if (this.root.hasAttribute('data-tabs-animating')) return;
     const focusables = list.querySelectorAll(`${this.settings.selector.tab}:not(:disabled)`);
     const active = document.activeElement;
     const currentIndex = [...focusables].indexOf(active);
@@ -147,13 +145,18 @@ class Tabs {
       panel.style.setProperty('position', 'absolute');
       if (!panel.hasAttribute('hidden') || panel.getAttribute('id') === id) {
         panel.style.setProperty('content-visibility', 'visible');
-
-        // Fix for WebKit
-        panel.style.setProperty('display', 'block');
+        panel.style.setProperty('display', 'block'); // Fix for WebKit
+      } else {
+        panel.style.setProperty('content-visibility', 'hidden');
+        panel.style.setProperty('display', 'none'); // Fix for WebKit
       }
       if (!this.settings.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
-    this.content.animate({ height: [`${[...this.panels].find(panel => !panel.hasAttribute('hidden')).scrollHeight}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing }).addEventListener('finish', () => {
+    const height = this.content.offsetHeight || [...this.panels].find(panel => !panel.hasAttribute('hidden')).offsetHeight;
+    if (this.content._animation) this.content._animation.cancel();
+    this.content._animation = this.content.animate({ height: [`${height}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing });
+    this.content._animation.addEventListener('finish', () => {
+      this.content._animation = null;
       root.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
@@ -168,7 +171,13 @@ class Tabs {
       }
       if (this.settings.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
-        panel.animate({ opacity: !panel.hasAttribute('hidden') ? [0, 1] : [1, 0] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' }).addEventListener('finish', () => panel.style.removeProperty('will-change'));
+        const opacity = panel.hasAttribute('hidden') ? window.getComputedStyle(panel).getPropertyValue('opacity') : '0';
+        if (panel._animation) panel._animation.cancel();
+        panel._animation = panel.animate({ opacity: !panel.hasAttribute('hidden') ? [opacity, '1'] : [opacity, '0'] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' });
+        panel._animation.addEventListener('finish', () => {
+          panel._animation = null;
+          panel.style.removeProperty('will-change');
+        });
       }
     });
   }
@@ -188,6 +197,7 @@ class TabsIndicator {
   }
 
   update() {
+    if (!this.indicator.checkVisibility()) return;
     const isHorizontal = this.list.getAttribute('aria-orientation') !== 'vertical';
     const position = isHorizontal ? 'left' : 'top';
     const size = isHorizontal ? 'width' : 'height';
