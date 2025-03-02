@@ -157,7 +157,7 @@ class Tabs {
   }
 
   private handleBeforeMatch(event: Event): void {
-    this.activate(document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).getAttribute('id')}"]`) as HTMLElement, true);
+    this.activate(document.querySelector(`[aria-controls="${(event.currentTarget as HTMLElement).getAttribute('id')}"]`)!, true);
   }
 
   activate(tab: HTMLElement, isMatch = false): void {
