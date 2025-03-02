@@ -96,16 +96,16 @@ class Tabs {
     const { key } = event;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
-    const focusables = list.querySelectorAll(`${this.settings.selector.tab}:not(:is([aria-disabled="true"], :disabled))`);
     const active = document.activeElement;
+    if ([' ', 'Enter'].includes(key)) {
+      active.click();
+      return;
+    }
+    const focusables = list.querySelectorAll(`${this.settings.selector.tab}:not(:is([aria-disabled="true"], :disabled))`);
     const currentIndex = [...focusables].indexOf(active);
     const length = focusables.length;
     let newIndex = currentIndex;
     switch (key) {
-      case ' ':
-      case 'Enter':
-        active.click();
-        return;
       case previous:
         newIndex = (currentIndex - 1 + length) % length;
         break;
