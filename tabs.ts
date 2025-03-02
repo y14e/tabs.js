@@ -227,12 +227,12 @@ class TabsIndicator {
     this.initialize();
   }
 
-  initialize() {
+  private initialize(): void {
     new ResizeObserver(() => this.update()).observe(this.list);
     new MutationObserver(() => this.update()).observe(this.list, { attributeFilter: ['aria-selected'], subtree: true });
   }
 
-  update() {
+  private update(): void {
     if (!this.indicator.checkVisibility()) return;
     const isHorizontal = this.list.getAttribute('aria-orientation') !== 'vertical';
     const position = isHorizontal ? 'left' : 'top';
