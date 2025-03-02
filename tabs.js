@@ -96,7 +96,7 @@ class Tabs {
     const { key } = event;
     if (![' ', 'Enter', previous, next, 'Home', 'End'].includes(key)) return;
     event.preventDefault();
-    const focusables = list.querySelectorAll(`${this.settings.selector.tab}:not(:disabled)`);
+    const focusables = list.querySelectorAll(`${this.settings.selector.tab}:not(:is([aria-disabled="true"], :disabled))`);
     const active = document.activeElement;
     const currentIndex = [...focusables].indexOf(active);
     const length = focusables.length;
