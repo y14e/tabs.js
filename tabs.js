@@ -83,11 +83,6 @@ class Tabs {
     this.root.setAttribute('data-tabs-initialized', '');
   }
 
-  handleClick(event) {
-    event.preventDefault();
-    this.activate(event.currentTarget);
-  }
-
   handleKeyDown(event) {
     const list = event.currentTarget;
     const isHorizontal = list.getAttribute('aria-orientation') !== 'vertical';
@@ -122,6 +117,11 @@ class Tabs {
     const tab = focusables[newIndex];
     tab.focus();
     if (this.settings.autoActivation) tab.click();
+  }
+
+  handleClick(event) {
+    event.preventDefault();
+    this.activate(event.currentTarget);
   }
 
   handleBeforeMatch(event) {
