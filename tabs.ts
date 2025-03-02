@@ -115,11 +115,6 @@ class Tabs {
     this.root.setAttribute('data-tabs-initialized', '');
   }
 
-  private handleClick(event: MouseEvent): void {
-    event.preventDefault();
-    this.activate(event.currentTarget as HTMLElement);
-  }
-
   private handleKeyDown(event: KeyboardEvent): void {
     const list = event.currentTarget as HTMLElement;
     const isHorizontal = list.getAttribute('aria-orientation') !== 'vertical';
@@ -154,6 +149,11 @@ class Tabs {
     const tab = focusables[newIndex] as HTMLElement;
     tab.focus();
     if (this.settings.autoActivation) tab.click();
+  }
+
+  private handleClick(event: MouseEvent): void {
+    event.preventDefault();
+    this.activate(event.currentTarget as HTMLElement);
   }
 
   private handleBeforeMatch(event: Event): void {
