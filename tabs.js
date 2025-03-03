@@ -33,6 +33,8 @@ class Tabs {
     this.content = this.root.querySelector(`${this.settings.selector.content}${NOT_NESTED}`);
     this.panels = this.root.querySelectorAll(`${this.settings.selector.panel}${NOT_NESTED}`);
     if (!this.lists.length || !this.tabs.length || !this.content || !this.panels.length) return;
+    this.animation = null;
+    this.panelAnimations = Array(this.panels.length).fill(null);
     this.initialize();
   }
 
@@ -153,15 +155,15 @@ class Tabs {
       if (!this.settings.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
     const height = this.content.offsetHeight || [...this.panels].find(panel => !panel.hasAttribute('hidden')).offsetHeight;
-    if (this.content._animation) this.content._animation.cancel();
-    this.content._animation = this.content.animate({ height: [`${height}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing });
-    this.content._animation.addEventListener('finish', () => {
-      this.content._animation = null;
+    if (this.animation) this.animation.cancel();
+    this.animation = this.content.animate({ height: [`${height}px`, `${document.getElementById(id).scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing });
+    this.animation.addEventListener('finish', () => {
+      this.animation = null;
       root.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
     });
-    [...this.panels].forEach(panel => {
+    [...this.panels].forEach((panel, i) => {
       if (panel.getAttribute('id') === id) {
         panel.removeAttribute('hidden');
         panel.setAttribute('tabindex', '0');
@@ -172,10 +174,11 @@ class Tabs {
       if (this.settings.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
         const opacity = panel.hasAttribute('hidden') ? window.getComputedStyle(panel).getPropertyValue('opacity') : '0';
-        if (panel._animation) panel._animation.cancel();
-        panel._animation = panel.animate({ opacity: !panel.hasAttribute('hidden') ? [opacity, '1'] : [opacity, '0'] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' });
-        panel._animation.addEventListener('finish', () => {
-          panel._animation = null;
+        let animation = this.panelAnimations[i];
+        if (animation) animation.cancel();
+        animation = this.panelAnimations[i] = panel.animate({ opacity: !panel.hasAttribute('hidden') ? [opacity, '1'] : [opacity, '0'] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' });
+        animation.addEventListener('finish', () => {
+          this.panelAnimations[i] = null;
           panel.style.removeProperty('will-change');
         });
       }

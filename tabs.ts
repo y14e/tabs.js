@@ -17,10 +17,6 @@ type TabsOptions = {
   };
 };
 
-interface HTMLElement_animation extends HTMLElement {
-  _animation?: Animation | null;
-}
-
 class Tabs {
   root: HTMLElement;
   defaults: TabsOptions;
@@ -28,8 +24,10 @@ class Tabs {
   lists: NodeListOf<HTMLElement>;
   tabs: NodeListOf<HTMLElement>;
   indicators: NodeListOf<HTMLElement>;
-  content: HTMLElement_animation;
+  content: HTMLElement;
   panels: NodeListOf<HTMLElement>;
+  animation: Animation | null = null;
+  panelAnimations: (Animation | null)[] = [];
 
   constructor(root: HTMLElement, options?: Partial<TabsOptions>) {
     this.root = root;
@@ -62,9 +60,11 @@ class Tabs {
     this.lists = this.root.querySelectorAll(`${this.settings.selector.list}${NOT_NESTED}`);
     this.tabs = this.root.querySelectorAll(`${this.settings.selector.tab}${NOT_NESTED}`);
     this.indicators = this.root.querySelectorAll(`${this.settings.selector.indicator}${NOT_NESTED}`);
-    this.content = this.root.querySelector(`${this.settings.selector.content}${NOT_NESTED}`) as HTMLElement_animation;
+    this.content = this.root.querySelector(`${this.settings.selector.content}${NOT_NESTED}`) as HTMLElement;
     this.panels = this.root.querySelectorAll(`${this.settings.selector.panel}${NOT_NESTED}`);
     if (!this.lists.length || !this.tabs.length || !this.content || !this.panels.length) return;
+    this.animation = null;
+    this.panelAnimations = Array(this.panels.length).fill(null);
     this.initialize();
   }
 
@@ -185,15 +185,15 @@ class Tabs {
       if (!this.settings.animation.crossFade && panel.getAttribute('id') !== id) panel.style.setProperty('visibility', 'hidden');
     });
     const height = this.content.offsetHeight || [...this.panels].find(panel => !panel.hasAttribute('hidden'))!.offsetHeight;
-    if (this.content._animation) this.content._animation.cancel();
-    this.content._animation = this.content.animate({ height: [`${height}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing });
-    this.content._animation.addEventListener('finish', () => {
-      this.content._animation = null;
+    if (this.animation) this.animation.cancel();
+    this.animation = this.content.animate({ height: [`${height}px`, `${document.getElementById(id!)!.scrollHeight}px`] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: this.settings.animation.easing });
+    this.animation.addEventListener('finish', () => {
+      this.animation = null;
       root.removeAttribute('data-tabs-animating');
       ['height', 'overflow', 'position', 'will-change'].forEach(name => this.content.style.removeProperty(name));
       [...this.panels].forEach(panel => ['content-visibility', 'display', 'position', 'visibility'].forEach(name => panel.style.removeProperty(name)));
     });
-    [...this.panels].forEach((panel: HTMLElement_animation) => {
+    [...this.panels].forEach((panel, i) => {
       if (panel.getAttribute('id') === id) {
         panel.removeAttribute('hidden');
         panel.setAttribute('tabindex', '0');
@@ -204,10 +204,11 @@ class Tabs {
       if (this.settings.animation.crossFade) {
         panel.style.setProperty('will-change', [...new Set(window.getComputedStyle(panel).getPropertyValue('will-change').split(',')).add('opacity').values()].filter(value => value !== 'auto').join(','));
         const opacity = panel.hasAttribute('hidden') ? window.getComputedStyle(panel).getPropertyValue('opacity') : '0';
-        if (panel._animation) panel._animation.cancel();
-        panel._animation = panel.animate({ opacity: !panel.hasAttribute('hidden') ? [opacity, '1'] : [opacity, '0'] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' });
-        panel._animation.addEventListener('finish', () => {
-          panel._animation = null;
+        let animation = this.panelAnimations[i];
+        if (animation) animation.cancel();
+        animation = this.panelAnimations[i] = panel.animate({ opacity: !panel.hasAttribute('hidden') ? [opacity, '1'] : [opacity, '0'] }, { duration: !isMatch ? this.settings.animation.duration : 0, easing: 'ease' });
+        animation.addEventListener('finish', () => {
+          this.panelAnimations[i] = null;
           panel.style.removeProperty('will-change');
         });
       }
